@@ -1,0 +1,119 @@
+TOTAL REVENUE,RECEIPTS
+"$15,088.76 MTD
+$15,504.02 last month","$15,088.76 MTD
+$15,504.02 last month"
+"$93,827.55 YTD
+$61,690.25 last year","$93,827.55 YTD
+$61,390.25 last year"
+OCCUPANCY,NET RENTALS
+81.21% UNITS,1 MTD
+63.78% SQ FT,0 YTD
+74.81% ECON
+LEADS SUMMARY
+TOTAL,MOVE IN %
+11,27.27% MTD
+85,51.76% YTD
+REVENUE
+REVENUE,06/30/2025,MTD,YTD
+Rent,$300.53,"$13,695.93","$83,800.20"
+Fees,$0.00,$331.60,"$2,401.50"
+Merchandise,$0.00,$0.00,$0.00
+Services,$0.00,$25.00,$51.61
+Insurance,$10.00,$941.23,"$6,214.24"
+Miscellaneous,$0.00,$95.00,"$1,360.00"
+TOTAL REVENUE,$310.53,"$15,088.76","$93,827.55"
+RECEIPTS
+TYPE,06/30/2025,MTD,YTD
+Cash,$0.00,$0.00,$0.00
+Credit Card,$310.53,"$13,936.26","$88,635.30"
+ACH,$0.00,"$1,152.50","$5,192.25"
+Check,$0.00,$0.00,$0.00
+Money Order,$0.00,$0.00,$0.00
+NET RECEIPTS,$310.53,"$15,088.76","$93,827.55"
+ALLOWANCES,06/30/2025,MTD,YTD
+Credits,$0.00,$318.50,"$2,104.32"
+Discounts,$8.60,$428.73,"$3,440.84"
+Waived Fee,$0.00,$141.40,$570.56
+Write Offs,$0.00,$0.00,$26.52
+TOTAL ALLOWANCES,$8.60,$888.63,"$6,142.24"
+INSURANCE/PROTECTION
+ENROLLED,NOT ENROLLED,TOTAL,PERCENT INSURED
+82,39,121,67.77%
+OCCUPANCY STATISTICS,,,,,ECONOMIC OCCUPANCY
+STATUS,UNITS,UNIT %,SQ FT,SQ FT %,POTENTIAL,POTENTIAL %,RENT,ECON OCC,VARIANCE
+Occupied,121,81.21%,"19,900.00",63.78%,"$14,130.50",72.44%,"$14,592.50",74.81%,$462.00
+Vacant,23,15.44%,"9,250.00",29.65%,"$4,530.00",23.22%,$0.00,0.00%,"-$4,530.00"
+Reserved,4,2.68%,"2,000.00",6.41%,$796.00,4.08%,$0.00,0.00%,-$796.00
+Complimentary,0,0.00%,0,0.00%,$0.00,0.00%,$0.00,0.00%,$0.00
+Unrentable,1,0.67%,50,0.16%,$49.50,0.25%,$0.00,0.00%,-$49.50
+TOTALS,149,,"31,200.00",,"$19,506.00",,"$14,592.50",,"-$4,913.50"
+RENTAL ACTIVITY
+TYPE,06/30/2025,MTD,YTD
+Move Ins,0,5,45
+Move Outs,0,4,45
+Reservations,2,6,42
+Transfers,2,2,9
+NET RENTALS,0,1,0
+TOP LEAD SOURCES
+SOURCE,06/30/2025,MTD,YTD
+Billboard,1,1,3
+Storedge Website,1,1,1
+Walk In,0,3,27
+Storedge Website - Inquiry,0,2,6
+Google,0,1,5
+Other,0,3,43
+AMOUNT DUE BY OLDEST CHARGE (CURRENT TENANTS)
+DAYS,UNITS,TENANTS,RENT,FEES,OTHER,TOTAL
+0-10,3,3,$264.50,$62.60,$33.00,$360.10
+11-30,2,2,$144.50,$55.00,$29.00,$228.50
+31-60,1,1,$99.00,$205.00,$0.00,$304.00
+61-90,1,1,$237.00,$225.00,$0.00,$462.00
+91-120,0,0,$0.00,$0.00,$0.00,$0.00
+120+,2,2,"$1,612.50",$535.20,$130.00,"$2,277.70"
+TOTALS,9,9,"$2,357.50","$1,082.80",$192.00,"$3,632.30"
+RECEIPTS BY CHARGE TYPE
+TYPE,06/30/2025,MTD,YTD
+Rental Revenue,$300.53,"$13,695.93","$83,800.20"
+Parking Revenue,$0.00,$0.00,$0.00
+Locker Revenue,$0.00,$0.00,$0.00
+Office Space Revenue,$0.00,$0.00,$0.00
+Wine Storage Revenue,$0.00,$0.00,$0.00
+Other Storage Revenue,$0.00,$0.00,$0.00
+Warehouse Storage Revenue,$0.00,$0.00,$0.00
+Mailbox Revenue,$0.00,$0.00,$0.00
+Cell/Billboard Revenue,$0.00,$0.00,$0.00
+RENT RECEIPTS,$300.53,"$13,695.93","$83,800.20"
+General Fee Revenue,$0.00,$0.00,$229.40
+Administrative Fee Revenue,$0.00,$0.00,$0.00
+Late Fee Revenue,$0.00,$331.60,"$2,172.10"
+NSF Fee Revenue,$0.00,$0.00,$0.00
+Chargeback Fee Revenue,$0.00,$0.00,$0.00
+Convenience Fee Revenue,$0.00,$0.00,$0.00
+Fee Revenue Other,$0.00,$0.00,$0.00
+FEE RECEIPTS,$0.00,$331.60,"$2,401.50"
+General Retail Revenue,$0.00,$0.00,$0.00
+Boxes Revenue,$0.00,$0.00,$0.00
+Locks Revenue,$0.00,$0.00,$0.00
+Truck Rental Revenue,$0.00,$0.00,$0.00
+RETAIL RECEIPTS,$0.00,$0.00,$0.00
+Insurance Revenue,$10.00,$941.23,"$6,214.24"
+Miscellaneous Revenue,$0.00,$95.00,"$1,360.00"
+Retained Security Deposit,$0.00,$0.00,$0.00
+Security Deposit,$0.00,$0.00,$0.00
+Service Revenue,$0.00,$25.00,$51.61
+Sales Tax City,$0.00,$0.00,$0.00
+Sales Tax State,$0.00,$0.00,$0.00
+Sales Tax Other,$0.00,$0.00,$0.00
+OTHER RECEIPTS,$10.00,"$1,061.23","$7,625.85"
+TOTAL RECEIPTS,$310.53,"$15,088.76","$93,827.55"
+LIABILITY BALANCES AS OF 06/30/2025
+TYPE,AMOUNT
+Prepaid Rent,$317.80
+Prepaid Insurance,$0.00
+Prepaid Services,$0.00
+Security Deposit,"$1,753.45"
+ADDITIONAL REVENUE
+TYPE,06/30/2025,MTD,YTD
+Retained Revenue,$0.00,$0.00,$0.00
+Retained Security Deposit,$0.00,$0.00,$0.00
+TOTAL ADDITIONAL REVENUE,$0.00,$0.00,$0.00

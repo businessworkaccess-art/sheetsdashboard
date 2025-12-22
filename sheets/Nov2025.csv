@@ -1,0 +1,118 @@
+TOTAL REVENUE,RECEIPTS
+"$16,685.04 MTD
+$16,029.51 last month","$16,685.04 MTD
+$16,029.51 last month"
+"$173,349.51 YTD
+$61,690.25 last year","$173,349.51 YTD
+$61,390.25 last year"
+OCCUPANCY,NET RENTALS
+72.68% UNITS,1 MTD
+73.65% SQ FT,20 YTD
+75.19% ECON
+LEADS SUMMARY
+TOTAL,MOVE IN %
+13,61.54% MTD
+182,53.85% YTD
+REVENUE
+REVENUE,11/30/2025,MTD,YTD
+Rent,$251.00,"$15,395.94","$156,908.19"
+Fees,$0.00,$104.10,"$3,062.00"
+Merchandise,$0.00,$0.00,$0.00
+Services,$0.00,$0.00,$51.61
+Insurance,$10.00,$990.00,"$11,147.71"
+Miscellaneous,$0.00,$195.00,"$2,180.00"
+TOTAL REVENUE,$261.00,"$16,685.04","$173,349.51"
+RECEIPTS
+TYPE,11/30/2025,MTD,YTD
+Cash,$0.00,$0.00,$0.00
+Credit Card,$261.00,"$15,918.54","$163,402.26"
+ACH,$0.00,$766.50,"$9,947.25"
+Check,$0.00,$0.00,$0.00
+Money Order,$0.00,$0.00,$0.00
+NET RECEIPTS,$261.00,"$16,685.04","$173,349.51"
+ALLOWANCES,11/30/2025,MTD,YTD
+Credits,$0.00,$251.50,"$3,038.45"
+Discounts,$124.50,$689.40,"$9,552.78"
+Waived Fee,$0.00,$115.00,"$1,280.66"
+Write Offs,$0.00,$0.00,$432.02
+TOTAL ALLOWANCES,$124.50,"$1,055.90","$14,303.91"
+INSURANCE/PROTECTION
+ENROLLED,NOT ENROLLED,TOTAL,PERCENT INSURED
+88,53,141,62.41%
+OCCUPANCY STATISTICS,,,,,ECONOMIC OCCUPANCY
+STATUS,UNITS,UNIT %,SQ FT,SQ FT %,POTENTIAL,POTENTIAL %,RENT,ECON OCC,VARIANCE
+Occupied,141,72.68%,"21,800.00",73.65%,"$16,391.50",75.35%,"$16,358.05",75.19%,-$33.45
+Vacant,51,26.29%,"7,600.00",25.68%,"$5,179.00",23.81%,$0.00,0.00%,"-$5,179.00"
+Reserved,1,0.52%,50,0.17%,$55.00,0.25%,$0.00,0.00%,-$55.00
+Complimentary,0,0.00%,0,0.00%,$0.00,0.00%,$0.00,0.00%,$0.00
+Unrentable,1,0.52%,150,0.51%,$129.00,0.59%,$0.00,0.00%,-$129.00
+TOTALS,194,,"29,600.00",,"$21,754.50",,"$16,358.05",,"-$5,396.45"
+RENTAL ACTIVITY
+TYPE,11/30/2025,MTD,YTD
+Move Ins,0,9,99
+Move Outs,0,8,79
+Reservations,0,6,83
+Transfers,0,1,23
+NET RENTALS,0,1,20
+TOP LEAD SOURCES
+SOURCE,11/30/2025,MTD,YTD
+Drive By,0,3,36
+Walk In,0,2,54
+Referral,0,2,13
+Storedge Website,0,2,5
+Online Marketing Service - Sparefoot,0,1,12
+Other,0,3,62
+AMOUNT DUE BY OLDEST CHARGE (CURRENT TENANTS)
+DAYS,UNITS,TENANTS,RENT,FEES,OTHER,TOTAL
+0-10,3,3,$348.50,$40.80,$36.00,$425.30
+11-30,4,4,$373.00,$126.80,$33.00,$532.80
+31-60,1,1,$252.00,$65.40,$20.00,$337.40
+91-120,1,1,$234.00,$245.00,$40.00,$519.00
+120+,3,3,"$1,065.00",$815.00,$174.00,"$2,054.00"
+TOTALS,12,12,"$2,272.50","$1,293.00",$303.00,"$3,868.50"
+RECEIPTS BY CHARGE TYPE
+TYPE,11/30/2025,MTD,YTD
+Rental Revenue,$251.00,"$15,395.94","$156,908.19"
+Parking Revenue,$0.00,$0.00,$0.00
+Locker Revenue,$0.00,$0.00,$0.00
+Office Space Revenue,$0.00,$0.00,$0.00
+Wine Storage Revenue,$0.00,$0.00,$0.00
+Other Storage Revenue,$0.00,$0.00,$0.00
+Warehouse Storage Revenue,$0.00,$0.00,$0.00
+Mailbox Revenue,$0.00,$0.00,$0.00
+Cell/Billboard Revenue,$0.00,$0.00,$0.00
+RENT RECEIPTS,$251.00,"$15,395.94","$156,908.19"
+General Fee Revenue,$0.00,$0.00,$229.40
+Administrative Fee Revenue,$0.00,$0.00,$0.00
+Late Fee Revenue,$0.00,$104.10,"$2,797.60"
+NSF Fee Revenue,$0.00,$0.00,$35.00
+Chargeback Fee Revenue,$0.00,$0.00,$0.00
+Convenience Fee Revenue,$0.00,$0.00,$0.00
+Fee Revenue Other,$0.00,$0.00,$0.00
+FEE RECEIPTS,$0.00,$104.10,"$3,062.00"
+General Retail Revenue,$0.00,$0.00,$0.00
+Boxes Revenue,$0.00,$0.00,$0.00
+Locks Revenue,$0.00,$0.00,$0.00
+Truck Rental Revenue,$0.00,$0.00,$0.00
+RETAIL RECEIPTS,$0.00,$0.00,$0.00
+Insurance Revenue,$10.00,$990.00,"$11,147.71"
+Miscellaneous Revenue,$0.00,$195.00,"$2,180.00"
+Retained Security Deposit,$0.00,$0.00,$0.00
+Security Deposit,$0.00,$0.00,$0.00
+Service Revenue,$0.00,$0.00,$51.61
+Sales Tax City,$0.00,$0.00,$0.00
+Sales Tax State,$0.00,$0.00,$0.00
+Sales Tax Other,$0.00,$0.00,$0.00
+OTHER RECEIPTS,$10.00,"$1,185.00","$13,379.32"
+TOTAL RECEIPTS,$261.00,"$16,685.04","$173,349.51"
+LIABILITY BALANCES AS OF 11/30/2025
+TYPE,AMOUNT
+Prepaid Rent,$326.50
+Prepaid Insurance,$10.00
+Prepaid Services,$0.00
+Security Deposit,"$1,453.45",MTD,YTD
+ADDITIONAL REVENUE
+TYPE,11/30/2025,MTD,YTD
+Retained Revenue,$0.00,$0.00,$0.00
+Retained Security Deposit,$0.00,$0.00,$0.00
+TOTAL ADDITIONAL REVENUE,$0.00,$0.00,$0.00

@@ -1,0 +1,119 @@
+TOTAL REVENUE,RECEIPTS
+"$15,305.17 MTD
+$12,868.06 last month","$15,305.17 MTD
+$12,868.06 last month"
+"$15,305.17 YTD
+$61,690.25 last year","$15,305.17 YTD
+$61,390.25 last year"
+OCCUPANCY,NET RENTALS
+83.45% UNITS,0 MTD
+69.07% SQ FT,0 YTD
+78.32% ECON
+LEADS SUMMARY
+TOTAL,MOVE IN %
+18,50.00% MTD
+18,50.00% YTD
+REVENUE
+REVENUE,01/31/2025,MTD,YTD
+Rent,$243.13,"$13,536.87","$13,536.87"
+Fees,$0.00,$425.00,$425.00
+Merchandise,$0.00,$0.00,$0.00
+Services,$0.00,$1.61,$1.61
+Insurance,$10.00,"$1,051.69","$1,051.69"
+Miscellaneous,$20.00,$290.00,$290.00
+TOTAL REVENUE,$273.13,"$15,305.17","$15,305.17"
+RECEIPTS
+TYPE,01/31/2025,MTD,YTD
+Cash,$0.00,$0.00,$0.00
+Credit Card,$273.13,"$14,807.72","$14,807.72"
+ACH,$0.00,$497.45,$497.45
+Check,$0.00,$0.00,$0.00
+Money Order,$0.00,$0.00,$0.00
+NET RECEIPTS,$273.13,"$15,305.17","$15,305.17"
+ALLOWANCES,01/31/2025,MTD,YTD
+Credits,$0.00,$711.63,$711.63
+Discounts,$11.38,"$1,289.34","$1,289.34"
+Waived Fee,$0.00,$40.06,$40.06
+Write Offs,$0.00,$0.00,$0.00
+TOTAL ALLOWANCES,$11.38,"$2,041.03","$2,041.03"
+INSURANCE/PROTECTION
+ENROLLED,NOT ENROLLED,TOTAL,PERCENT INSURED
+78,$43.00,$121.00,64.46%
+OCCUPANCY STATISTICS,,,,,ECONOMIC OCCUPANCY
+STATUS,UNITS,UNIT %,SQ FT,SQ FT %,POTENTIAL,POTENTIAL %,RENT,ECON OCC,VARIANCE
+Occupied,121,83.45%,"21,550.00",69.07%,"$14,366.50",76.32%,"$14,743.00",78.32%,$376.50
+Vacant,21,14.48%,"8,800.00",28.21%,"$4,110.00",21.83%,,,"-$4,110.00"
+Reserved,2,1.38%,800.00,2.56%,$299.00,1.59%,,,-$299.00
+Complimentary,0,0.00%,0,0.00%,$0.00,0.00%,,,$0.00
+Unrentable,1,0.69%,50.00,0.16%,$49.50,0.26%,,,-$49.50
+TOTALS,145,,"31,200.00",,"$18,825.00",,"$14,743.00",,"-$4,082.00"
+RENTAL ACTIVITY,,,,2.88%,$384.00,2.04%,,,-$384.00
+TYPE,01/31/2025,MTD,YTD,0.00%,$0.00,0.00%,,,$0.00
+Move Ins,1,10,10,0.16%,$49.50,0.26%,,,-$49.50
+Move Outs,0,10,10.00,,"$18,801.00",,"$14,595.00",,"-$4,206.00"
+Reservations,0,11,11
+Transfers,0,4,4
+NET RENTALS,1,0,0
+TOP LEAD SOURCES
+SOURCE,01/31/2025,MTD,YTD
+Walk In,0,4,4
+Storedge Website - Inquiry,0,3,3
+Billboard,0,2,2
+Drive By,0,1,1
+Google,0,1,1
+Other,0,7,$7.00
+AMOUNT DUE BY OLDEST CHARGE (CURRENT TENANTS)
+DAYS,UNITS,TENANTS,RENT,FEES,OTHER,TOTAL
+0-10,4,4,$286.00,$112.60,$33.00,$431.60
+11-30,2,2,$171.00,$80.60,$29.00,$280.60
+31-60,0,0,$0.00,$0.00,$0.00,$0.00
+61-90,2,2,$549.50,$285.20,$60.00,$894.70
+91-120,0,0,$0.00,$0.00,$0.00,$0.00
+120+,1,1,$420.40,$0.00,$39.00,$459.40
+TOTALS,9,$9.00,"$1,426.90",$478.40,$161.00,"$2,066.30"
+RECEIPTS BY CHARGE TYPE,,,,$285.20,$60.00,$894.70
+TYPE,01/31/2025,MTD,YTD,$0.00,$0.00,$0.00
+Rental Revenue,$243.13,"$13,536.87","$13,536.87",$0.00,$39.00,$459.40
+Parking Revenue,$0.00,$0.00,$0.00,$435.80,$210.00,"$2,347.20"
+Locker Revenue,$0.00,$0.00,$0.00
+Office Space Revenue,$0.00,$0.00,$0.00
+Wine Storage Revenue,$0.00,$0.00,$0.00
+Other Storage Revenue,$0.00,$0.00,$0.00
+Warehouse Storage Revenue,$0.00,$0.00,$0.00
+Mailbox Revenue,$0.00,$0.00,$0.00
+Cell/Billboard Revenue,$0.00,$0.00,$0.00
+RENT RECEIPTS,$243.13,"$13,536.87","$13,536.87"
+General Fee Revenue,$0.00,$0.00,$0.00
+Administrative Fee Revenue,$0.00,$0.00,$0.00
+Late Fee Revenue,$0.00,$425.00,$425.00
+NSF Fee Revenue,$0.00,$0.00,$0.00
+Chargeback Fee Revenue,$0.00,$0.00,$0.00
+Convenience Fee Revenue,$0.00,$0.00,$0.00
+Fee Revenue Other,$0.00,$0.00,$0.00
+FEE RECEIPTS,$0.00,$425.00,$425.00
+General Retail Revenue,$0.00,$0.00,$0.00
+Boxes Revenue,$0.00,$0.00,$0.00
+Locks Revenue,$0.00,$0.00,$0.00
+Truck Rental Revenue,$0.00,$0.00,$0.00
+RETAIL RECEIPTS,$0.00,$0.00,$0.00
+Insurance Revenue,$10.00,"$1,051.69","$1,051.69"
+Miscellaneous Revenue,$20.00,$290.00,$290.00
+Retained Security Deposit,$0.00,$0.00,$0.00
+Security Deposit,$0.00,$0.00,$0.00
+Service Revenue,$0.00,$1.61,$1.61
+Sales Tax City,$0.00,$0.00,$0.00
+Sales Tax State,$0.00,$0.00,$0.00
+Sales Tax Other,$0.00,$0.00,$0.00
+OTHER RECEIPTS,$30.00,"$1,343.30","$1,343.30"
+TOTAL RECEIPTS,$273.13,"$15,305.17","$15,305.17"
+LIABILITY BALANCES AS OF 01/31/2025,,$0.00,$0.00
+TYPE,AMOUNT,$0.00,$0.00
+Prepaid Rent,$473.69,"$1,103.69","$1,103.69"
+Prepaid Insurance,$26.00,"$13,645.09","$13,645.09"
+Prepaid Services,$0.00
+Security Deposit,"$1,953.45"
+ADDITIONAL REVENUE
+TYPE,01/31/2025,MTD,YTD
+Retained Revenue,$0.00,$0.00,$0.00
+Retained Security Deposit,$0.00,$0.00,$0.00
+TOTAL ADDITIONAL REVENUE,$0.00,$0.00,$0.00

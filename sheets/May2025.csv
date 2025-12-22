@@ -1,0 +1,119 @@
+TOTAL REVENUE,RECEIPTS
+"$15,504.02 MTD
+$15,127.61 last month","$15,504.02 MTD
+$15,127.61 last month"
+"$78,738.79 YTD
+$61,690.25 last year","$78,738.79 YTD
+$61,390.25 last year"
+OCCUPANCY,NET RENTALS
+80.54% UNITS,1 MTD
+62.18% SQ FT,-1 YTD
+73.06% ECON
+LEADS SUMMARY
+TOTAL,MOVE IN %
+12,58.33% MTD
+74,54.05% YTD
+REVENUE
+REVENUE,05/31/2025,MTD,YTD
+Rent,$151.50,"$13,589.00","$70,104.27"
+Fees,$40.00,$599.70,"$2,069.90"
+Merchandise,$0.00,$0.00,$0.00
+Services,$0.00,$0.00,$26.61
+Insurance,$23.00,"$1,070.32","$5,273.01"
+Miscellaneous,$0.00,$245.00,"$1,265.00"
+TOTAL REVENUE,$214.50,"$15,504.02","$78,738.79"
+RECEIPTS
+TYPE,05/31/2025,MTD,YTD
+Cash,$0.00,$0.00,$0.00
+Credit Card,$214.50,"$14,688.52","$74,699.04"
+ACH,$0.00,$815.50,"$4,039.75"
+Check,$0.00,$0.00,$0.00
+Money Order,$0.00,$0.00,$0.00
+NET RECEIPTS,$214.50,"$15,504.02","$78,738.79"
+ALLOWANCES,05/31/2025,MTD,YTD
+Credits,$0.00,$28.00,"$1,785.82"
+Discounts,$0.00,$267.72,"$3,012.11"
+Waived Fee,$0.00,$24.10,$429.16
+Write Offs,$0.00,$0.00,$26.52
+TOTAL ALLOWANCES,$0.00,$319.82,"$5,253.61"
+INSURANCE/PROTECTION
+ENROLLED,NOT ENROLLED,TOTAL,PERCENT INSURED
+85,35,120,70.83%
+OCCUPANCY STATISTICS,,,,,ECONOMIC OCCUPANCY
+STATUS,UNITS,UNIT %,SQ FT,SQ FT %,POTENTIAL,POTENTIAL %,RENT,ECON OCC,VARIANCE
+Occupied,120,80.54%,"19,400.00",62.18%,"$13,951.00",71.52%,"$14,250.55",73.06%,$299.55
+Vacant,24,16.11%,"9,950.00",31.89%,"$4,739.00",24.30%,$0.00,0.00%,"-$4,739.00"
+Reserved,4,2.68%,"1,800.00",5.77%,$766.50,3.93%,$0.00,0.00%,-$766.50
+Complimentary,0,0.00%,0,0.00%,$0.00,0.00%,$0.00,0.00%,$0.00
+Unrentable,1,0.67%,50,0.16%,$49.50,0.25%,$0.00,0.00%,-$49.50
+TOTALS,149,,"31,200.00",,"$19,506.00",,"$14,250.55",,"-$5,255.45"
+RENTAL ACTIVITY
+TYPE,05/31/2025,MTD,YTD
+Move Ins,0,7,40
+Move Outs,1,6,41
+Reservations,0,7,36
+Transfers,0,1,7
+NET RENTALS,-1,1,-1
+TOP LEAD SOURCES
+SOURCE,05/31/2025,MTD,YTD
+Walk In,0,3,24
+Drive By,0,2,12
+Storedge Website - Move-In,0,2,5
+Google,0,1,4
+Phone Call,0,1,2
+Other,0,3,27
+AMOUNT DUE BY OLDEST CHARGE (CURRENT TENANTS)
+DAYS,UNITS,TENANTS,RENT,FEES,OTHER,TOTAL
+0-10,0,0,$0.00,$0.00,$0.00,$0.00
+11-30,1,1,$49.50,$35.00,$0.00,$84.50
+31-60,2,2,$640.00,$66.40,$26.00,$732.40
+61-90,0,0,$0.00,$0.00,$0.00,$0.00
+91-120,1,1,$342.00,$245.00,$40.00,$627.00
+120+,1,1,"$1,003.00",$365.60,$70.00,"$1,438.60"
+TOTALS,5,5,"$2,034.50",$712.00,$136.00,"$2,882.50"
+RECEIPTS BY CHARGE TYPE
+TYPE,05/31/2025,MTD,YTD
+Rental Revenue,$151.50,"$13,589.00","$70,104.27"
+Parking Revenue,$0.00,$0.00,$0.00
+Locker Revenue,$0.00,$0.00,$0.00
+Office Space Revenue,$0.00,$0.00,$0.00
+Wine Storage Revenue,$0.00,$0.00,$0.00
+Other Storage Revenue,$0.00,$0.00,$0.00
+Warehouse Storage Revenue,$0.00,$0.00,$0.00
+Mailbox Revenue,$0.00,$0.00,$0.00
+Cell/Billboard Revenue,$0.00,$0.00,$0.00
+RENT RECEIPTS,$151.50,"$13,589.00","$70,104.27"
+General Fee Revenue,$0.00,$0.00,$229.40
+Administrative Fee Revenue,$0.00,$0.00,$0.00
+Late Fee Revenue,$40.00,$599.70,"$1,840.50"
+NSF Fee Revenue,$0.00,$0.00,$0.00
+Chargeback Fee Revenue,$0.00,$0.00,$0.00
+Convenience Fee Revenue,$0.00,$0.00,$0.00
+Fee Revenue Other,$0.00,$0.00,$0.00
+FEE RECEIPTS,$40.00,$599.70,"$2,069.90"
+General Retail Revenue,$0.00,$0.00,$0.00
+Boxes Revenue,$0.00,$0.00,$0.00
+Locks Revenue,$0.00,$0.00,$0.00
+Truck Rental Revenue,$0.00,$0.00,$0.00
+RETAIL RECEIPTS,$0.00,$0.00,$0.00
+Insurance Revenue,$23.00,"$1,070.32","$5,273.01"
+Miscellaneous Revenue,$0.00,$245.00,"$1,265.00"
+Retained Security Deposit,$0.00,$0.00,$0.00
+Security Deposit,$0.00,$0.00,$0.00
+Service Revenue,$0.00,$0.00,$26.61
+Sales Tax City,$0.00,$0.00,$0.00
+Sales Tax State,$0.00,$0.00,$0.00
+Sales Tax Other,$0.00,$0.00,$0.00
+OTHER RECEIPTS,$23.00,"$1,315.32","$6,564.62"
+TOTAL RECEIPTS,$214.50,"$15,504.02","$78,738.79"
+LIABILITY BALANCES AS OF 05/31/2025
+TYPE,AMOUNT
+Prepaid Rent,$99.50
+Prepaid Insurance,$6.77
+Prepaid Services,$0.00
+Security Deposit,"$1,753.45"
+ADDITIONAL REVENUE
+TYPE,05/31/2025,MTD,YTD
+Retained Revenue,$0.00,$0.00,$0.00
+Retained Security Deposit,$100.00,$200.00,$300.00
+TOTAL ADDITIONAL REVENUE,$100.00,$200.00,$300.00

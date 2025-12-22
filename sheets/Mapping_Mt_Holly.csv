@@ -1,0 +1,56 @@
+Cell Mapping,Daily,Month-to-Date,Fiscal YTD,Row,,Cell Mapping,Units,%Units,Area,%Area
+Deposits Cash,B10,C10,D10,10,,Occupancy,g8,h8,i8,j8
+Deposits Check,B11,C11,D11,11,,Occupied,g9,h9,i9,j9
+Deposits ACH Debit,B12,C12,D12,12,,Vacant*,g10,h10,i10,j10
+Deposits Debit Card,B13,C13,D13,13,,Unrentable,g11,h11,i11,j11
+Deposits Charge Card,B14,C14,D14,14,,Complimentary,g12,h12,i12,j12
+Deposits SubTotal,B15,C15,D15,15,,Total,g13,h13,i13,j13
+Deposits Misc Deposit,B16,C16,D16,16
+Deposits Total,B17,C17,D17,17,,Cell Mapping
+Rent,B23,C23,D23,23,,Waiting List,f14
+Recurring,B24,C24,D24,24,,Overlocked**,f15
+Late Fee,B26,C26,D26,26,,Gross Potential Rates,f16
+NSF Fee Rent,B27,C27,D27,27,,Autobilled**,i14
+Admin Fee Recurring,B28,C28,D28,28,,Insurance**,i15
+Insurance,B29,C29,D29,29
+Other Late Fee,B30,C30,D30,30,,Cell Mapping,Units,%Units,Area,%Area
+Misc Deposit ,B31,C31,D31,31,,Gross Potential Rates,i16,j16,k16,l16
+Security Deposit ,B32,C32,D32,32,,Gross Unrentable Unit Rates,i17,j17,k17,l17
+Merchandise ,B33,C33,D33,33,,Gross Vacant Unit Rates,i18,j18,k18,l18
+Tax 1 ,B34,C34,D34,34,,Gross Occupied Unit Rates,i19,j19,k19,l19
+Tax 2 ,B35,C35,D35,35,,Gross Complimentary Unit Rates,i21,j21,k21,l21
+Total ,B36,C36,D36,36,,Actual Occupied Unit Rates,i22,j22,k22,l22
+Prepaid Rent ,B40,C40,D40,40,,Occupied Rate Variance,i23,j23,k23,l23
+Current Rent,B41,C41,D41,41
+Past Due Rent ,B42,C42,D42,42
+Total,B44,C44,D44,44
+Current Late Fee Past Due Rent,B46,C46,D46,46
+Past Due Late Fee,B47,C47,D47,47
+Total Total,B48,C48,D48,48
+NSF Reversals Current Late Fee,B50,C50,D50,50
+Concessions,B53,C53,D53,53
+Rent ,B54,C54,D54,54
+Rent (Bad Debt),B55,C55,D55,55
+Late Fees,B56,C56,D56,56
+Taxes Concessions,B57,C57,D57,57
+Other ,B58,C58,D58,58
+Total ,B59,C59,D59,59
+Discounts ,B60,C60,D60,60
+Rent (Expiring) Taxes,B61,C61,D61,61
+Rent (Non-Expiring) Other,B62,C62,D62,62
+Bad Debts ,B64,C64,D64,64
+Activity,B66,C66,D66,66
+Move-Ins,B68,C68,D68,68
+Insurance,B69,C69,D69,69
+Move-Outs Activity,B70,C70,D70,70
+Transfers,B71,C71,D71,71
+Rented Area Increase Move-Ins,B72,C72,D72,72
+Collection Notes Insurance,B73,C73,D73,73
+Auctions Move-Outs,B74,C74,D74,74
+Leads Transfers,B75,C75,D75,75
+SpareFoot Leads Rented Area Increase,B76,C76,D76,76
+Phone Leads Collection Notes,B77,C77,D77,77
+Web Leads Auctions,B78,C78,D78,78
+Walk-In Leads Leads,B79,C79,D79,79
+Leads Converted SpareFoot Leads,B80,C80,D80,80
+Leads Converted Phone Leads,B81,C81,D81,81
