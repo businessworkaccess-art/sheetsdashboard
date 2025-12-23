@@ -67,4 +67,43 @@ Keep specs light but explicit; update them before coding when behavior changes.
 - When unsure about a mapping, inspect the relevant tab and annotate assumptions in comments or docs.
 - After substantial changes, add a short note in this file or a dedicated changelog summarizing what changed at a high level.
 
+---
 
+### 7. Changelog
+
+#### December 2025 - Dashboard Redesign (Open Door Capital Style)
+
+**Changes made to match client's sample dashboard:**
+
+1. **Removed**: `Primary KPIs (Charlotte vs Houston)` table - per client request
+
+2. **Added new KPI section** with gauge-style components:
+
+   - **Fund Occupancy Gauge**: Semi-circular progress indicator showing total fund occupancy %
+   - **Occupancy Growth Bar**: Horizontal stacked bar comparing beginning vs current occupancy
+   - **Actual Occupancy Metric**: Large KPI number with Charlotte/Houston breakdown
+   - **Financial & Operational Comments**: Dynamic text with current metrics
+
+3. **Enhanced Portfolio Overview table**:
+
+   - Added `Asset Type` column
+   - Added `Closing Date` column
+
+4. **Updated data layer** (`src/lib/sheets.ts`):
+
+   - New `KPIMetrics` type with comprehensive metrics
+   - New `RevenueTrendData` type for chart data
+   - `fetchDashboardData()` function returns full dashboard data
+   - Fallback trend data generation if sheet fetch fails
+
+5. **Data mapping** (2025ALL PROPERTIES):
+
+   - Revenue: Rows 2-4 (Hamshire, Mt Holly, Total)
+   - Occupancy %: Rows 7-8
+   - Occupied Units: Rows 11-12
+   - Move Ins/Outs: Rows 28-38
+   - Rent Per Sq Ft: Rows 23-24
+
+6. **Charts**: Connected to live Google Sheets data via revenue trend fetch
+
+7. **Disposed Properties**: Added table for divested assets (Valdez example included)

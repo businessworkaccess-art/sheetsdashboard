@@ -272,31 +272,265 @@
   margin: 0 0 16px;
 }
 
+/* ===== KPI SECTION - NEW LAYOUT ===== */
+.kpiSection {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr 2fr;
+  gap: 20px;
+}
+
+.kpiCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  box-shadow: 
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpiCardWide {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  box-shadow: 
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.kpiCardWide h3,
+.kpiCard h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.kpiCardHeader {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.kpiCardHeader h3 {
+  margin: 0 0 4px;
+}
+
+.kpiSubtext {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===== GAUGE STYLES ===== */
+.gaugeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.gaugeLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.gaugeSublabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.gaugeWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 90px;
+}
+
+.gaugeValue {
+  position: absolute;
+  bottom: 0;
+  font-size: 36px;
+  font-weight: 800;
+  color: #0a1628;
+  letter-spacing: -0.02em;
+}
+
+.gaugeLegend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* ===== GROWTH BAR STYLES ===== */
+.growthBarWrapper {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.growthBarContainer {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.growthBarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.growthBarLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.growthBarPercent {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.growthBarTrack {
+  height: 28px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.growthBarFillBeginning {
+  height: 100%;
+  background: linear-gradient(90deg, #0a1628 0%, #1e3a5f 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  transition: width 1s ease-out;
+}
+
+.growthBarFillCurrent {
+  height: 100%;
+  background: linear-gradient(90deg, #b8973f 0%, #c9a962 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  transition: width 1s ease-out;
+}
+
+.growthBarValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+
+.growthLegend {
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  justify-content: center;
+}
+
+/* ===== BIG NUMBER STYLES ===== */
+.bigNumber {
+  font-size: 56px;
+  font-weight: 800;
+  color: #0a1628;
+  text-align: center;
+  letter-spacing: -0.03em;
+  margin: 10px 0;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.kpiDetails {
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.kpiDetailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.kpiDetailValue {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 /* ===== TABLES ===== */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  border-radius: var(--radius-md);
+}
+
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-primary);
+  min-width: 1000px; /* Ensure table has minimum width to trigger scroll if needed */
 }
 
 .table th,
 .table td {
-  padding: 12px 16px;
+  padding: 10px 12px;
   text-align: left;
   border-bottom: 1px solid var(--border-light);
 }
 
 .table th {
   font-weight: 600;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-tertiary);
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   position: sticky;
   top: 0;
+  white-space: nowrap;
 }
 
 .table th:first-child {
@@ -329,6 +563,17 @@
   font-feature-settings: 'tnum';
 }
 
+/* Disposition Notes column styling */
+.dispositionNotes {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 400px;
+  min-width: 300px;
+  white-space: normal;
+  font-weight: 400;
+}
+
 /* ===== ERROR STATE ===== */
 .error {
   color: #dc2626;
@@ -353,7 +598,7 @@
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  min-height: 280px;
+  min-height: 220px;
   display: flex;
   align-items: stretch;
 }
@@ -393,7 +638,7 @@
 }
 
 .heroContent > * {
-  padding: 28px 32px;
+  padding: 24px 28px;
 }
 
 .logoBlock {
@@ -403,8 +648,8 @@
 }
 
 .logoWrapper {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -423,22 +668,22 @@
 }
 
 .fundTitle {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
 }
 
 .fundSubtitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
   margin-top: 4px;
 }
 
 .fundPeriod {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--color-accent);
   margin-top: 6px;
   display: flex;
@@ -466,24 +711,24 @@
 .headerRight {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   justify-content: center;
 }
 
 .headerLabel {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .headerBody {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 /* ===== GRID LAYOUTS ===== */
@@ -514,8 +759,15 @@
 }
 
 .chartContainer {
-  height: 280px;
+  height: 260px;
   padding: 8px 0;
+}
+
+.chartSubtext {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+  margin-top: -8px;
 }
 
 /* ===== BODY TEXT ===== */
@@ -524,11 +776,29 @@
   color: var(--text-secondary);
   line-height: 1.7;
   font-weight: 400;
+  margin: 0;
+}
+
+.bodyText strong {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1400px) {
+  .kpiSection {
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+  .kpiCardWide {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 1200px) {
   .bottomGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .kpiSection {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -580,7 +850,8 @@
   }
 
   .middleGrid,
-  .bottomGrid {
+  .bottomGrid,
+  .kpiSection {
     grid-template-columns: 1fr;
   }
 
@@ -591,6 +862,15 @@
 
   .card {
     padding: 18px 20px;
+  }
+
+  .kpiCard,
+  .kpiCardWide {
+    grid-column: auto;
+  }
+
+  .bigNumber {
+    font-size: 42px;
   }
 }
 
@@ -611,6 +891,15 @@
   .button,
   .buttonPrimary {
     width: 100%;
+  }
+
+  .table {
+    font-size: 11px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 6px;
   }
 }
 
@@ -637,6 +926,37 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
 }
 
 /* ===== PRINT STYLES ===== */

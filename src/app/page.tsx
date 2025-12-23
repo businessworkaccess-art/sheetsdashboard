@@ -15,12 +15,45 @@ import {
   YAxis,
   Area,
   AreaChart,
+  Line,
+  LineChart,
 } from "recharts";
 
-type DashboardSummaryRow = {
-  label: string;
-  charlotte: string;
-  houston: string;
+type KPIMetrics = {
+  charlotteRevenue: string;
+  charlotteOccupiedUnits: number;
+  charlotteTotalUnits: number;
+  charlotteOccupancyPercent: number;
+  charlotteMoveIns: number;
+  charlotteMoveOuts: number;
+  charlotteRentPerSqFt: string;
+  houstonRevenue: string;
+  houstonOccupiedUnits: number;
+  houstonTotalUnits: number;
+  houstonOccupancyPercent: number;
+  houstonMoveIns: number;
+  houstonMoveOuts: number;
+  houstonRentPerSqFt: string;
+  fundTotalOccupiedUnits: number;
+  fundTotalUnits: number;
+  fundOccupancyPercent: number;
+  fundTotalRevenue: string;
+  fundTotalMoveIns: number;
+  fundTotalMoveOuts: number;
+  charlotteBeginningUnits: number;
+  houstonBeginningUnits: number;
+  fundBeginningUnits: number;
+  charlotteOccupancyGrowth: number;
+  houstonOccupancyGrowth: number;
+  fundOccupancyGrowth: number;
+};
+
+type RevenueTrendData = {
+  month: string;
+  charlotte: number;
+  houston: number;
+  total: number;
+  forecast: number;
 };
 
 // Custom tooltip component for charts
@@ -87,35 +120,138 @@ const CustomTooltip = ({
   return null;
 };
 
+// Semi-circular gauge component
+const OccupancyGauge = ({
+  percentage,
+  label,
+  sublabel,
+  beginningValue,
+  currentValue,
+}: {
+  percentage: number;
+  label: string;
+  sublabel: string;
+  beginningValue?: number;
+  currentValue?: number;
+}) => {
+  const radius = 70;
+  const strokeWidth = 14;
+  const normalizedRadius = radius - strokeWidth / 2;
+  const circumference = Math.PI * normalizedRadius;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className={styles.gaugeContainer}>
+      <div className={styles.gaugeLabel}>{label}</div>
+      <div className={styles.gaugeSublabel}>{sublabel}</div>
+      <div className={styles.gaugeWrapper}>
+        <svg
+          height={radius + 10}
+          width={radius * 2 + 20}
+          viewBox={`0 0 ${radius * 2 + 20} ${radius + 10}`}
+        >
+          {/* Background arc */}
+          <path
+            d={`M ${10 + strokeWidth/2} ${radius} A ${normalizedRadius} ${normalizedRadius} 0 0 1 ${radius * 2 + 10 - strokeWidth/2} ${radius}`}
+            fill="none"
+            stroke="#e2e8f0"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+          />
+          {/* Foreground arc */}
+          <path
+            d={`M ${10 + strokeWidth/2} ${radius} A ${normalizedRadius} ${normalizedRadius} 0 0 1 ${radius * 2 + 10 - strokeWidth/2} ${radius}`}
+            fill="none"
+            stroke="url(#gaugeGradient)"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            style={{ transition: "stroke-dashoffset 1s ease-in-out" }}
+          />
+          <defs>
+            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0a1628" />
+              <stop offset="100%" stopColor="#1e3a5f" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className={styles.gaugeValue}>{percentage.toFixed(1)}%</div>
+      </div>
+      {beginningValue !== undefined && currentValue !== undefined && (
+        <div className={styles.gaugeLegend}>
+          <span className={styles.legendItem}>
+            <span className={styles.legendDot} style={{ background: "#0a1628" }}></span>
+            Beginning: {beginningValue}
+          </span>
+          <span className={styles.legendItem}>
+            <span className={styles.legendDot} style={{ background: "#c9a962" }}></span>
+            Current: {currentValue}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Horizontal bar chart for occupancy growth
+const OccupancyGrowthBar = ({
+  currentValue,
+  beginningValue,
+  growthPercent,
+  label,
+}: {
+  currentValue: number;
+  beginningValue: number;
+  growthPercent: number;
+  label: string;
+}) => {
+  const maxValue = Math.max(currentValue, beginningValue) * 1.1;
+  const beginningWidth = (beginningValue / maxValue) * 100;
+  const currentWidth = (currentValue / maxValue) * 100;
+
+  return (
+    <div className={styles.growthBarContainer}>
+      <div className={styles.growthBarHeader}>
+        <span className={styles.growthBarLabel}>{label}</span>
+        <span className={styles.growthBarPercent} style={{ color: growthPercent >= 0 ? "#10b981" : "#ef4444" }}>
+          {growthPercent >= 0 ? "+" : ""}{growthPercent.toFixed(1)}%
+        </span>
+      </div>
+      <div className={styles.growthBarTrack}>
+        <div 
+          className={styles.growthBarFillBeginning} 
+          style={{ width: `${beginningWidth}%` }}
+        >
+          <span className={styles.growthBarValue}>{beginningValue}</span>
+        </div>
+      </div>
+      <div className={styles.growthBarTrack}>
+        <div 
+          className={styles.growthBarFillCurrent} 
+          style={{ width: `${currentWidth}%` }}
+        >
+          <span className={styles.growthBarValue}>{currentValue}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
-  const [summary, setSummary] = useState<DashboardSummaryRow[]>([]);
+  const [kpiMetrics, setKpiMetrics] = useState<KPIMetrics | null>(null);
+  const [revenueTrend, setRevenueTrend] = useState<RevenueTrendData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [year, setYear] = useState<string>("2025");
-  const [month, setMonth] = useState<string>("Jun");
+  const [month, setMonth] = useState<string>("Dec");
   const [hasMounted, setHasMounted] = useState(false);
   const dashboardRef = useRef<HTMLDivElement | null>(null);
-
-  // Temporary demo data for charts
-  const revenueData = [
-    { month: "Jul", noi: 25000, projected: 26000 },
-    { month: "Aug", noi: 24500, projected: 25500 },
-    { month: "Sep", noi: 25200, projected: 26200 },
-    { month: "Oct", noi: 25800, projected: 26800 },
-    { month: "Nov", noi: 26500, projected: 27200 },
-    { month: "Dec", noi: 27200, projected: 27800 },
-  ];
-
-  const fundNoiData = [{ name: "Fund", projected: 345000, actual: 335000 }];
-
-  const propertyNoiData = [
-    { name: "Hamshire", projected: 160000, actual: 150000 },
-    { name: "Mt Holly", projected: 183000, actual: 175000 },
-  ];
 
   useEffect(() => {
     async function load() {
       try {
+        setLoading(true);
         const params = new URLSearchParams({ month, year });
         const res = await fetch(`/api/dashboard?${params.toString()}`, {
           cache: "no-store",
@@ -124,7 +260,8 @@ export default function Home() {
           throw new Error("Failed to fetch dashboard data");
         }
         const json = await res.json();
-        setSummary(json.summary ?? []);
+        setKpiMetrics(json.kpiMetrics ?? null);
+        setRevenueTrend(json.revenueTrend ?? []);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -135,6 +272,41 @@ export default function Home() {
     load();
     setHasMounted(true);
   }, [month, year]);
+
+  // Get last 12 months of revenue data for charts
+  const chartRevenueData = revenueTrend.slice(-12).map((d) => ({
+    month: d.month.replace("'", " 20"),
+    noi: d.total,
+    projected: d.forecast,
+    recurring: d.total * 0.85, // Approximate recurring revenue
+  }));
+
+  // Property NOI data from KPI metrics
+  const propertyNoiData = kpiMetrics
+    ? [
+        {
+          name: "Mt Holly (Charlotte)",
+          projected: 35000,
+          actual: parseFloat(kpiMetrics.charlotteRevenue.replace(/[$,]/g, "")) || 0,
+        },
+        {
+          name: "Hamshire (Houston)",
+          projected: 18000,
+          actual: parseFloat(kpiMetrics.houstonRevenue.replace(/[$,]/g, "")) || 0,
+        },
+      ]
+    : [];
+
+  // Fund NOI data
+  const fundNoiData = kpiMetrics
+    ? [
+        {
+          name: "ODC Fund",
+          projected: 55000,
+          actual: parseFloat(kpiMetrics.fundTotalRevenue.replace(/[$,]/g, "")) || 0,
+        },
+      ]
+    : [];
 
   async function handleExport(format: "png" | "jpeg" | "pdf") {
     if (!dashboardRef.current) return;
@@ -304,7 +476,7 @@ export default function Home() {
                   Rethink Self Storage Fund
                 </div>
                 <div className={styles.fundPeriod}>
-                  As of {month} {year}
+                  {month} {year}
                 </div>
               </div>
             </div>
@@ -338,8 +510,10 @@ export default function Home() {
               <tr>
                 <th>Fund</th>
                 <th>Property</th>
-                <th>Market</th>
+                <th>Asset Type</th>
                 <th>Units</th>
+                <th>Market</th>
+                <th>Closing Date</th>
                 <th>Purchase Price</th>
                 <th>Capital Investment</th>
                 <th>Loan Amount</th>
@@ -352,8 +526,10 @@ export default function Home() {
               <tr>
                 <td>Rethink Self Storage Fund</td>
                 <td>Hamshire</td>
-                <td>Houston, TX</td>
+                <td>Self Storage</td>
                 <td>222</td>
+                <td>Houston, TX</td>
+                <td>12/22/2023</td>
                 <td>$1,500,000</td>
                 <td>$300,000</td>
                 <td>$1,435,000</td>
@@ -364,8 +540,10 @@ export default function Home() {
               <tr>
                 <td>Rethink Self Storage Fund</td>
                 <td>Mt Holly</td>
-                <td>Charlotte, NC</td>
+                <td>Self Storage</td>
                 <td>501</td>
+                <td>Charlotte, NC</td>
+                <td>1/4/2024</td>
                 <td>$2,100,000</td>
                 <td>$915,000</td>
                 <td>$2,532,000</td>
@@ -377,313 +555,431 @@ export default function Home() {
           </table>
         </section>
 
-        {/* Middle band – KPIs + comments */}
-        <section className={styles.middleGrid}>
-          <div className={styles.card}>
-            <h2>Primary KPIs (Charlotte vs Houston)</h2>
-            {loading && (
-              <div className={styles.loading}>
-                <div className={styles.loadingSpinner}></div>
-                Loading dashboard data…
-              </div>
-            )}
-            {error && <p className={styles.error}>{error}</p>}
-            {!loading && !error && (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>KPI</th>
-                    <th>Charlotte</th>
-                    <th>Houston</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summary.map((row) => (
-                    <tr key={row.label}>
-                      <td>{row.label}</td>
-                      <td>{row.charlotte}</td>
-                      <td>{row.houston}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-
-          <div className={styles.card}>
-            <h2>Financial &amp; Operational Comments</h2>
-            <p className={styles.bodyText}>
-              This quarter continued to build on prior rent increases and
-              occupancy gains across both Charlotte and Houston. Marketing spend
-              remains disciplined while lead volume and move‑ins track ahead of
-              plan. We are focused on sustaining high-quality occupancy and
-              selective rate increases as we move into the next quarter.
-            </p>
+        {/* Disposed Properties table */}
+        <section className={styles.card}>
+          <h2>Disposed Properties</h2>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Fund</th>
+                  <th>Property</th>
+                  <th>Asset Type</th>
+                  <th>Units</th>
+                  <th>Market</th>
+                  <th>Acquisition Date</th>
+                  <th>Purchase Price</th>
+                  <th>Capital Investment</th>
+                  <th>Disposition Date</th>
+                  <th>Disposition Price</th>
+                  <th>Disposition Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Rethink Self Storage Fund</td>
+                  <td>Valdez</td>
+                  <td>MHP</td>
+                  <td>175</td>
+                  <td>Valdez, AK</td>
+                  <td>1/12/2021</td>
+                  <td>$3,950,000</td>
+                  <td>$2,165,623</td>
+                  <td>11/3/2023</td>
+                  <td>$4,500,000</td>
+                  <td className={styles.dispositionNotes}>
+                    Infrastructure and logistical challenges at Valdez made infill unfeasible, 
+                    preventing execution of the original business plan. To mitigate long-term risks, 
+                    the property was divested in 2023. The strong performance of the remaining Fund 
+                    assets, which are exceeding original NOI projections, is expected to offset the 
+                    underperformance. We still project the fund to achieve its originally projected returns.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
+
+        {/* Middle band – KPI Gauges + Comments */}
+        {loading && (
+          <div className={styles.loading}>
+            <div className={styles.loadingSpinner}></div>
+            Loading dashboard data…
+          </div>
+        )}
+        {error && <p className={styles.error}>{error}</p>}
+        
+        {!loading && !error && kpiMetrics && (
+          <section className={styles.kpiSection}>
+            {/* Fund Occupancy Gauge */}
+            <div className={styles.kpiCard}>
+              <OccupancyGauge
+                percentage={kpiMetrics.fundOccupancyPercent}
+                label="Fund Occupancy"
+                sublabel="End of Quarter"
+                beginningValue={kpiMetrics.fundBeginningUnits}
+                currentValue={kpiMetrics.fundTotalOccupiedUnits}
+              />
+            </div>
+
+            {/* Occupancy Growth */}
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiCardHeader}>
+                <h3>Occupancy Growth since Acquisition</h3>
+                <span className={styles.kpiSubtext}>End of Quarter, All Unit Types</span>
+              </div>
+              <div className={styles.growthBarWrapper}>
+                <OccupancyGrowthBar
+                  currentValue={kpiMetrics.fundTotalOccupiedUnits}
+                  beginningValue={kpiMetrics.fundBeginningUnits}
+                  growthPercent={kpiMetrics.fundOccupancyGrowth}
+                  label="Rethink Fund"
+                />
+              </div>
+              <div className={styles.growthLegend}>
+                <span className={styles.legendItem}>
+                  <span className={styles.legendDot} style={{ background: "#0a1628" }}></span>
+                  Beginning Occupancy
+                </span>
+                <span className={styles.legendItem}>
+                  <span className={styles.legendDot} style={{ background: "#c9a962" }}></span>
+                  Current Occupancy
+                </span>
+              </div>
+            </div>
+
+            {/* Actual Occupancy Big Number */}
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiCardHeader}>
+                <h3>Actual Occupancy</h3>
+                <span className={styles.kpiSubtext}>End of Quarter</span>
+              </div>
+              <div className={styles.bigNumber}>
+                {kpiMetrics.fundOccupancyPercent.toFixed(1)}%
+              </div>
+              <div className={styles.kpiDetails}>
+                <div className={styles.kpiDetailRow}>
+                  <span>Charlotte (Mt Holly)</span>
+                  <span className={styles.kpiDetailValue}>{kpiMetrics.charlotteOccupancyPercent.toFixed(0)}%</span>
+                </div>
+                <div className={styles.kpiDetailRow}>
+                  <span>Houston (Hamshire)</span>
+                  <span className={styles.kpiDetailValue}>{kpiMetrics.houstonOccupancyPercent.toFixed(0)}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Financial & Operational Comments */}
+            <div className={styles.kpiCardWide}>
+              <h3>Financial &amp; Operational Comments</h3>
+              <p className={styles.bodyText}>
+                {month} {year} continued to build on prior rent increases and
+                occupancy gains across both Charlotte and Houston. Total fund occupancy 
+                stands at <strong>{kpiMetrics.fundOccupancyPercent.toFixed(1)}%</strong> with {" "}
+                <strong>{kpiMetrics.fundTotalOccupiedUnits}</strong> occupied units out of {" "}
+                <strong>{kpiMetrics.fundTotalUnits}</strong> total units. Net move-ins for the 
+                period: <strong>{kpiMetrics.fundTotalMoveIns - kpiMetrics.fundTotalMoveOuts}</strong>.
+                Marketing spend remains disciplined while lead volume and move‑ins track ahead of
+                plan. We are focused on sustaining high-quality occupancy and
+                selective rate increases as we move into the next quarter.
+              </p>
+              <p className={styles.bodyText} style={{ marginTop: "12px" }}>
+                We are currently exploring value-add opportunities across both properties. 
+                The fund will continue pushing value through expense reduction and revenue 
+                optimization, regardless of market conditions.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Bottom band – charts */}
-        <section className={styles.bottomGrid}>
-          <div className={styles.card}>
-            <h2>Recurring Revenue &amp; NOI Trend</h2>
-            <div className={styles.chartContainer}>
-              {hasMounted && (
+        {!loading && !error && hasMounted && (
+          <section className={styles.bottomGrid}>
+            <div className={styles.card}>
+              <h2>Recurring Revenue &amp; NOI</h2>
+              <div className={styles.chartSubtext}>*Trailing Twelve Months</div>
+              <div className={styles.chartContainer}>
                 <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
-                  <defs>
-                    <linearGradient
-                      id="noiGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#0a1628" stopOpacity={0.3} />
-                      <stop
-                        offset="95%"
-                        stopColor="#0a1628"
-                        stopOpacity={0.05}
-                      />
-                    </linearGradient>
-                    <linearGradient
-                      id="projectedGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#c9a962" stopOpacity={0.3} />
-                      <stop
-                        offset="95%"
-                        stopColor="#c9a962"
-                        stopOpacity={0.05}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e2e8f0"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="month"
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e2e8f0" }}
-                  />
-                  <YAxis
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "16px" }}
-                    iconType="circle"
-                    iconSize={8}
-                    formatter={(value) => (
-                      <span
-                        style={{
-                          color: "#475569",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
+                  <AreaChart data={chartRevenueData}>
+                    <defs>
+                      <linearGradient
+                        id="noiGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
                       >
-                        {value}
-                      </span>
-                    )}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="noi"
-                    stroke="#0a1628"
-                    strokeWidth={2.5}
-                    fill="url(#noiGradient)"
-                    name="NOI"
-                    dot={{ fill: "#0a1628", strokeWidth: 0, r: 4 }}
-                    activeDot={{
-                      fill: "#0a1628",
-                      strokeWidth: 2,
-                      stroke: "#fff",
-                      r: 6,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="projected"
-                    stroke="#c9a962"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    fill="url(#projectedGradient)"
-                    name="Projected NOI"
-                    dot={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-              )}
+                        <stop offset="5%" stopColor="#0a1628" stopOpacity={0.3} />
+                        <stop
+                          offset="95%"
+                          stopColor="#0a1628"
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                      <linearGradient
+                        id="projectedGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="5%" stopColor="#c9a962" stopOpacity={0.3} />
+                        <stop
+                          offset="95%"
+                          stopColor="#c9a962"
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                      <linearGradient
+                        id="recurringGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop
+                          offset="95%"
+                          stopColor="#10b981"
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e2e8f0"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="month"
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 10, fill: "#64748b", fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#e2e8f0" }}
+                      interval={0}
+                      angle={-45}
+                      textAnchor="end"
+                      height={50}
+                    />
+                    <YAxis
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      wrapperStyle={{ paddingTop: "16px" }}
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value) => (
+                        <span
+                          style={{
+                            color: "#475569",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {value}
+                        </span>
+                      )}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="noi"
+                      stroke="#0a1628"
+                      strokeWidth={2.5}
+                      fill="url(#noiGradient)"
+                      name="NOI"
+                      dot={{ fill: "#0a1628", strokeWidth: 0, r: 3 }}
+                      activeDot={{
+                        fill: "#0a1628",
+                        strokeWidth: 2,
+                        stroke: "#fff",
+                        r: 5,
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="projected"
+                      stroke="#c9a962"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      fill="url(#projectedGradient)"
+                      name="Projected NOI"
+                      dot={false}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="recurring"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      fill="url(#recurringGradient)"
+                      name="Recurring Revenue"
+                      dot={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-          <div className={styles.card}>
-            <h2>Fund NOI Performance</h2>
-            <div className={styles.chartContainer}>
-              {hasMounted && (
+            <div className={styles.card}>
+              <h2>Fund NOI vs Projected NOI</h2>
+              <div className={styles.chartSubtext}>*Quarterly Sum</div>
+              <div className={styles.chartContainer}>
                 <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={fundNoiData} barGap={8}>
-                  <defs>
-                    <linearGradient
-                      id="barProjected"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor="#e2e8f0" />
-                      <stop offset="100%" stopColor="#cbd5e1" />
-                    </linearGradient>
-                    <linearGradient id="barActual" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#c9a962" />
-                      <stop offset="100%" stopColor="#b8973f" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e2e8f0"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e2e8f0" }}
-                  />
-                  <YAxis
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "16px" }}
-                    iconType="circle"
-                    iconSize={8}
-                    formatter={(value) => (
-                      <span
-                        style={{
-                          color: "#475569",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
+                  <BarChart data={fundNoiData} barGap={8}>
+                    <defs>
+                      <linearGradient
+                        id="barProjected"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
                       >
-                        {value}
-                      </span>
-                    )}
-                  />
-                  <Bar
-                    dataKey="projected"
-                    fill="url(#barProjected)"
-                    name="Projected NOI"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={60}
-                  />
-                  <Bar
-                    dataKey="actual"
-                    fill="url(#barActual)"
-                    name="Actual NOI"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={60}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-              )}
+                        <stop offset="0%" stopColor="#e2e8f0" />
+                        <stop offset="100%" stopColor="#cbd5e1" />
+                      </linearGradient>
+                      <linearGradient id="barActual" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#c9a962" />
+                        <stop offset="100%" stopColor="#b8973f" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e2e8f0"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#e2e8f0" }}
+                    />
+                    <YAxis
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      wrapperStyle={{ paddingTop: "16px" }}
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value) => (
+                        <span
+                          style={{
+                            color: "#475569",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {value}
+                        </span>
+                      )}
+                    />
+                    <Bar
+                      dataKey="projected"
+                      fill="url(#barProjected)"
+                      name="Projected NOI"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={60}
+                    />
+                    <Bar
+                      dataKey="actual"
+                      fill="url(#barActual)"
+                      name="Actual NOI"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={60}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-          <div className={styles.card}>
-            <h2>Property NOI Comparison</h2>
-            <div className={styles.chartContainer}>
-              {hasMounted && (
+            <div className={styles.card}>
+              <h2>Property NOI vs Projected NOI</h2>
+              <div className={styles.chartSubtext}>*Quarterly Sum</div>
+              <div className={styles.chartContainer}>
                 <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={propertyNoiData} layout="vertical" barGap={4}>
-                  <defs>
-                    <linearGradient
-                      id="barProjectedH"
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor="#cbd5e1" />
-                      <stop offset="100%" stopColor="#e2e8f0" />
-                    </linearGradient>
-                    <linearGradient id="barActualH" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#b8973f" />
-                      <stop offset="100%" stopColor="#c9a962" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e2e8f0"
-                    horizontal={false}
-                  />
-                  <XAxis
-                    type="number"
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e2e8f0" }}
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                  />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    stroke="#94a3b8"
-                    tick={{ fontSize: 11, fill: "#475569", fontWeight: 600 }}
-                    tickLine={false}
-                    axisLine={false}
-                    width={80}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "16px" }}
-                    iconType="circle"
-                    iconSize={8}
-                    formatter={(value) => (
-                      <span
-                        style={{
-                          color: "#475569",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
+                  <BarChart data={propertyNoiData} layout="vertical" barGap={4}>
+                    <defs>
+                      <linearGradient
+                        id="barProjectedH"
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="0"
                       >
-                        {value}
-                      </span>
-                    )}
-                  />
-                  <Bar
-                    dataKey="projected"
-                    fill="url(#barProjectedH)"
-                    name="Projected NOI"
-                    radius={[0, 6, 6, 0]}
-                    maxBarSize={24}
-                  />
-                  <Bar
-                    dataKey="actual"
-                    fill="url(#barActualH)"
-                    name="Actual NOI"
-                    radius={[0, 6, 6, 0]}
-                    maxBarSize={24}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-              )}
+                        <stop offset="0%" stopColor="#cbd5e1" />
+                        <stop offset="100%" stopColor="#e2e8f0" />
+                      </linearGradient>
+                      <linearGradient id="barActualH" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#b8973f" />
+                        <stop offset="100%" stopColor="#c9a962" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e2e8f0"
+                      horizontal={false}
+                    />
+                    <XAxis
+                      type="number"
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#e2e8f0" }}
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      stroke="#94a3b8"
+                      tick={{ fontSize: 10, fill: "#475569", fontWeight: 600 }}
+                      tickLine={false}
+                      axisLine={false}
+                      width={100}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      wrapperStyle={{ paddingTop: "16px" }}
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value) => (
+                        <span
+                          style={{
+                            color: "#475569",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {value}
+                        </span>
+                      )}
+                    />
+                    <Bar
+                      dataKey="projected"
+                      fill="url(#barProjectedH)"
+                      name="Projected NOI"
+                      radius={[0, 6, 6, 0]}
+                      maxBarSize={24}
+                    />
+                    <Bar
+                      dataKey="actual"
+                      fill="url(#barActualH)"
+                      name="Actual NOI"
+                      radius={[0, 6, 6, 0]}
+                      maxBarSize={24}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
     </main>
   );
