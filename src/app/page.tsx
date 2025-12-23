@@ -9,8 +9,6 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -26,40 +24,59 @@ type DashboardSummaryRow = {
 };
 
 // Custom tooltip component for charts
-const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; color: string }>;
+  label?: string;
+}) => {
   if (active && payload && payload.length) {
     return (
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.98)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(226, 232, 240, 0.8)',
-        borderRadius: '10px',
-        padding: '12px 16px',
-        boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
-      }}>
-        <p style={{ 
-          fontWeight: 600, 
-          color: '#0f172a', 
-          marginBottom: '8px',
-          fontSize: '13px'
-        }}>{label}</p>
+      <div
+        style={{
+          background: "rgba(255, 255, 255, 0.98)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(226, 232, 240, 0.8)",
+          borderRadius: "10px",
+          padding: "12px 16px",
+          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
+        }}
+      >
+        <p
+          style={{
+            fontWeight: 600,
+            color: "#0f172a",
+            marginBottom: "8px",
+            fontSize: "13px",
+          }}
+        >
+          {label}
+        </p>
         {payload.map((entry, index) => (
-          <div key={index} style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '12px',
-            color: '#475569',
-            marginTop: '4px'
-          }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: entry.color
-            }} />
+          <div
+            key={index}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              fontSize: "12px",
+              color: "#475569",
+              marginTop: "4px",
+            }}
+          >
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: entry.color,
+              }}
+            />
             <span>{entry.name}:</span>
-            <span style={{ fontWeight: 600, color: '#0f172a' }}>
+            <span style={{ fontWeight: 600, color: "#0f172a" }}>
               ${entry.value.toLocaleString()}
             </span>
           </div>
@@ -76,6 +93,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [year, setYear] = useState<string>("2025");
   const [month, setMonth] = useState<string>("Jun");
+  const [hasMounted, setHasMounted] = useState(false);
   const dashboardRef = useRef<HTMLDivElement | null>(null);
 
   // Temporary demo data for charts
@@ -115,6 +133,7 @@ export default function Home() {
     }
 
     load();
+    setHasMounted(true);
   }, [month, year]);
 
   async function handleExport(format: "png" | "jpeg" | "pdf") {
@@ -131,7 +150,9 @@ export default function Home() {
         ? canvas.toDataURL("image/jpeg", 0.95)
         : canvas.toDataURL("image/png");
 
-    const filename = `rethink-dashboard-${year}-${month}.${format === "pdf" ? "pdf" : format}`;
+    const filename = `rethink-dashboard-${year}-${month}.${
+      format === "pdf" ? "pdf" : format
+    }`;
 
     if (format === "pdf") {
       const pdf = new jsPDF({
@@ -151,7 +172,16 @@ export default function Home() {
 
   // Icon components for buttons
   const DownloadIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <polyline points="7 10 12 15 17 10" />
       <line x1="12" y1="15" x2="12" y2="3" />
@@ -159,7 +189,16 @@ export default function Home() {
   );
 
   const PDFIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <polyline points="14 2 14 8 20 8" />
       <line x1="9" y1="15" x2="15" y2="15" />
@@ -240,39 +279,53 @@ export default function Home() {
       </div>
 
       <div ref={dashboardRef} className={styles.dashboard}>
-        {/* Top band – logo + fund meta */}
-        <section className={styles.reportHeader}>
-          <div className={styles.logoBlock}>
-            <div className={styles.logoCircle}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 21h18" />
-                <path d="M5 21V7l8-4v18" />
-                <path d="M19 21V11l-6-4" />
-              </svg>
-            </div>
-            <div>
-              <div className={styles.fundTitle}>Gamma Income</div>
-              <div className={styles.fundSubtitle}>Rethink Self Storage Fund</div>
-              <div className={styles.fundPeriod}>
-                As of {month} {year}
+        {/* Top band – Hero with logo + fund meta */}
+        <section className={styles.heroSection}>
+          <div className={styles.heroBackground}>
+            <img
+              src="/heroimage.jpeg"
+              alt="Investment Properties"
+              className={styles.heroImage}
+            />
+            <div className={styles.heroOverlay}></div>
+          </div>
+          <div className={styles.heroContent}>
+            <div className={styles.logoBlock}>
+              <div className={styles.logoWrapper}>
+                <img
+                  src="/logo.png"
+                  alt="Rethink Logo"
+                  className={styles.logoImage}
+                />
+              </div>
+              <div>
+                <div className={styles.fundTitle}>Gamma Income</div>
+                <div className={styles.fundSubtitle}>
+                  Rethink Self Storage Fund
+                </div>
+                <div className={styles.fundPeriod}>
+                  As of {month} {year}
+                </div>
               </div>
             </div>
-          </div>
-          <div className={styles.headerMiddle}>
-            <div className={styles.headerLabel}>Original Business Plan</div>
-            <div className={styles.headerBody}>
-              Increase value through a combination of increasing occupancy,
-              improving management, revenue optimization and increasing rents.
+            <div className={styles.headerMiddle}>
+              <div className={styles.headerLabel}>Original Business Plan</div>
+              <div className={styles.headerBody}>
+                Increase value through a combination of increasing occupancy,
+                improving management, revenue optimization and increasing rents.
+              </div>
             </div>
-          </div>
-          <div className={styles.headerRight}>
-            <div>
-              <div className={styles.headerLabel}>Targeted Hold</div>
-              <div className={styles.headerBody}>~ 5 Years</div>
-            </div>
-            <div>
-              <div className={styles.headerLabel}>Targeted Rate of Return</div>
-              <div className={styles.headerBody}>15–25% IRR (Equity Shareclasses)</div>
+            <div className={styles.headerRight}>
+              <div>
+                <div className={styles.headerLabel}>Targeted Hold</div>
+                <div className={styles.headerBody}>~ 5 Years</div>
+              </div>
+              <div>
+                <div className={styles.headerLabel}>Targeted Rate of Return</div>
+                <div className={styles.headerBody}>
+                  15–25% IRR (Equity Shareclasses)
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -374,25 +427,50 @@ export default function Home() {
           <div className={styles.card}>
             <h2>Recurring Revenue &amp; NOI Trend</h2>
             <div className={styles.chartContainer}>
-              <ResponsiveContainer width="100%" height="100%">
+              {hasMounted && (
+                <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData}>
                   <defs>
-                    <linearGradient id="noiGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0f766e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#0f766e" stopOpacity={0.05} />
+                    <linearGradient
+                      id="noiGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#0a1628" stopOpacity={0.3} />
+                      <stop
+                        offset="95%"
+                        stopColor="#0a1628"
+                        stopOpacity={0.05}
+                      />
                     </linearGradient>
-                    <linearGradient id="projectedGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0.02} />
+                    <linearGradient
+                      id="projectedGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#c9a962" stopOpacity={0.3} />
+                      <stop
+                        offset="95%"
+                        stopColor="#c9a962"
+                        stopOpacity={0.05}
+                      />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#e2e8f0"
+                    vertical={false}
+                  />
                   <XAxis
                     dataKey="month"
                     stroke="#94a3b8"
                     tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
+                    axisLine={{ stroke: "#e2e8f0" }}
                   />
                   <YAxis
                     stroke="#94a3b8"
@@ -403,27 +481,40 @@ export default function Home() {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
-                    wrapperStyle={{ paddingTop: '16px' }}
+                    wrapperStyle={{ paddingTop: "16px" }}
                     iconType="circle"
                     iconSize={8}
                     formatter={(value) => (
-                      <span style={{ color: "#475569", fontSize: '12px', fontWeight: 500 }}>{value}</span>
+                      <span
+                        style={{
+                          color: "#475569",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {value}
+                      </span>
                     )}
                   />
                   <Area
                     type="monotone"
                     dataKey="noi"
-                    stroke="#0f766e"
+                    stroke="#0a1628"
                     strokeWidth={2.5}
                     fill="url(#noiGradient)"
                     name="NOI"
-                    dot={{ fill: '#0f766e', strokeWidth: 0, r: 4 }}
-                    activeDot={{ fill: '#0f766e', strokeWidth: 2, stroke: '#fff', r: 6 }}
+                    dot={{ fill: "#0a1628", strokeWidth: 0, r: 4 }}
+                    activeDot={{
+                      fill: "#0a1628",
+                      strokeWidth: 2,
+                      stroke: "#fff",
+                      r: 6,
+                    }}
                   />
                   <Area
                     type="monotone"
                     dataKey="projected"
-                    stroke="#f97316"
+                    stroke="#c9a962"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     fill="url(#projectedGradient)"
@@ -432,30 +523,42 @@ export default function Home() {
                   />
                 </AreaChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
           <div className={styles.card}>
             <h2>Fund NOI Performance</h2>
             <div className={styles.chartContainer}>
-              <ResponsiveContainer width="100%" height="100%">
+              {hasMounted && (
+                <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={fundNoiData} barGap={8}>
                   <defs>
-                    <linearGradient id="barProjected" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="barProjected"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="0%" stopColor="#e2e8f0" />
                       <stop offset="100%" stopColor="#cbd5e1" />
                     </linearGradient>
                     <linearGradient id="barActual" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#14b8a6" />
-                      <stop offset="100%" stopColor="#0f766e" />
+                      <stop offset="0%" stopColor="#c9a962" />
+                      <stop offset="100%" stopColor="#b8973f" />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#e2e8f0"
+                    vertical={false}
+                  />
                   <XAxis
                     dataKey="name"
                     stroke="#94a3b8"
                     tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
+                    axisLine={{ stroke: "#e2e8f0" }}
                   />
                   <YAxis
                     stroke="#94a3b8"
@@ -466,11 +569,19 @@ export default function Home() {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
-                    wrapperStyle={{ paddingTop: '16px' }}
+                    wrapperStyle={{ paddingTop: "16px" }}
                     iconType="circle"
                     iconSize={8}
                     formatter={(value) => (
-                      <span style={{ color: "#475569", fontSize: '12px', fontWeight: 500 }}>{value}</span>
+                      <span
+                        style={{
+                          color: "#475569",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {value}
+                      </span>
                     )}
                   />
                   <Bar
@@ -489,30 +600,42 @@ export default function Home() {
                   />
                 </BarChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
           <div className={styles.card}>
             <h2>Property NOI Comparison</h2>
             <div className={styles.chartContainer}>
-              <ResponsiveContainer width="100%" height="100%">
+              {hasMounted && (
+                <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={propertyNoiData} layout="vertical" barGap={4}>
                   <defs>
-                    <linearGradient id="barProjectedH" x1="0" y1="0" x2="1" y2="0">
+                    <linearGradient
+                      id="barProjectedH"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="0"
+                    >
                       <stop offset="0%" stopColor="#cbd5e1" />
                       <stop offset="100%" stopColor="#e2e8f0" />
                     </linearGradient>
                     <linearGradient id="barActualH" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#0f766e" />
-                      <stop offset="100%" stopColor="#14b8a6" />
+                      <stop offset="0%" stopColor="#b8973f" />
+                      <stop offset="100%" stopColor="#c9a962" />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#e2e8f0"
+                    horizontal={false}
+                  />
                   <XAxis
                     type="number"
                     stroke="#94a3b8"
                     tick={{ fontSize: 11, fill: "#64748b", fontWeight: 500 }}
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
+                    axisLine={{ stroke: "#e2e8f0" }}
                     tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                   />
                   <YAxis
@@ -526,11 +649,19 @@ export default function Home() {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
-                    wrapperStyle={{ paddingTop: '16px' }}
+                    wrapperStyle={{ paddingTop: "16px" }}
                     iconType="circle"
                     iconSize={8}
                     formatter={(value) => (
-                      <span style={{ color: "#475569", fontSize: '12px', fontWeight: 500 }}>{value}</span>
+                      <span
+                        style={{
+                          color: "#475569",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {value}
+                      </span>
                     )}
                   />
                   <Bar
@@ -549,6 +680,7 @@ export default function Home() {
                   />
                 </BarChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
         </section>

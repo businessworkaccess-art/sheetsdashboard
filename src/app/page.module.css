@@ -18,8 +18,8 @@
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(15, 118, 110, 0.05), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(249, 115, 22, 0.03), transparent);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(10, 22, 40, 0.04), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(201, 169, 98, 0.03), transparent);
   pointer-events: none;
   z-index: 0;
 }
@@ -173,18 +173,19 @@
 }
 
 .buttonPrimary {
-  background: var(--gradient-primary);
-  color: #ffffff;
+  background: var(--gradient-accent);
+  color: var(--color-primary);
   border: none;
+  font-weight: 700;
   box-shadow: 
     var(--shadow-md),
-    0 2px 8px rgba(15, 118, 110, 0.3);
+    0 2px 8px rgba(201, 169, 98, 0.3);
 }
 
 .buttonPrimary:hover {
   box-shadow: 
     var(--shadow-lg),
-    0 4px 16px rgba(15, 118, 110, 0.4);
+    0 4px 16px rgba(201, 169, 98, 0.4);
   transform: translateY(-2px);
 }
 
@@ -231,7 +232,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-primary);
+  background: var(--gradient-accent);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
@@ -264,7 +265,7 @@
   width: 4px;
   height: 18px;
   border-radius: 2px;
-  background: var(--gradient-primary);
+  background: var(--gradient-accent);
 }
 
 .sectionTitle {
@@ -311,7 +312,7 @@
 }
 
 .table tbody tr:hover {
-  background: rgba(15, 118, 110, 0.03);
+  background: rgba(201, 169, 98, 0.05);
 }
 
 .table tbody tr:last-child td {
@@ -347,90 +348,111 @@
   font-size: 16px;
 }
 
-/* ===== REPORT HEADER ===== */
-.reportHeader {
+/* ===== HERO SECTION ===== */
+.heroSection {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+  align-items: stretch;
+}
+
+.heroBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 22, 40, 0.92) 0%,
+    rgba(15, 36, 68, 0.88) 50%,
+    rgba(26, 50, 85, 0.85) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1.5fr 2.2fr 1.3fr;
   gap: 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--gradient-header);
-  box-shadow: 
-    0 4px 16px rgba(15, 23, 42, 0.15),
-    0 2px 4px rgba(15, 23, 42, 0.1);
-  position: relative;
+  width: 100%;
+  padding: 0;
 }
 
-.reportHeader::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse 100% 100% at 0% 0%, rgba(15, 118, 110, 0.15), transparent 50%),
-    radial-gradient(ellipse 80% 80% at 100% 100%, rgba(249, 115, 22, 0.1), transparent 50%);
-  pointer-events: none;
-}
-
-.reportHeader > * {
-  position: relative;
-  z-index: 1;
-  padding: 24px 28px;
+.heroContent > * {
+  padding: 28px 32px;
 }
 
 .logoBlock {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
 }
 
-.logoCircle {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-  color: #ffffff;
+.logoWrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  box-shadow: 
-    0 4px 12px rgba(15, 118, 110, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .fundTitle {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
 }
 
 .fundSubtitle {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .fundPeriod {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 4px;
+  color: var(--color-accent);
+  margin-top: 6px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .fundPeriod::before {
   content: '';
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  background: var(--color-accent);
+  box-shadow: 0 0 12px rgba(201, 169, 98, 0.6);
 }
 
 .headerMiddle {
@@ -444,24 +466,24 @@
 .headerRight {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
 }
 
 .headerLabel {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 4px;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
 }
 
 .headerBody {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* ===== GRID LAYOUTS ===== */
@@ -540,11 +562,15 @@
     border-top: 1px solid var(--border-light);
   }
 
-  .reportHeader {
+  .heroSection {
+    min-height: auto;
+  }
+
+  .heroContent {
     grid-template-columns: 1fr;
   }
 
-  .reportHeader > *:not(:last-child) {
+  .heroContent > *:not(:last-child) {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
