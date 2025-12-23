@@ -105,25 +105,46 @@ export async function fetchDashboardData(
   const sheets = google.sheets({ version: "v4", auth });
 
   // Fetch main properties data
+  // Fetch main properties data
   const yearSheet = year === "2024" ? "2024ALL PROPERTIES" : "2025ALL PROPERTIES";
   const range = `'${yearSheet}'!A1:AB60`;
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range,
-  });
+  
+  let rows: any[][] = [];
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range,
+    });
+    rows = res.data.values ?? [];
+  } catch (error) {
+    console.error(`Error fetching sheet ${yearSheet}:`, error);
+    // If sheet doesn't exist or other error, fallback to empty to avoid crash
+    // We will handle empty rows below by returning zeroed metrics
+  }
 
-  const rows = res.data.values ?? [];
-
+  // usage of rows is already correct from previous block
+  
   const headerRow = rows[0] ?? [];
   const monthHeader = `${monthShort} ${year}`;
-  const monthCol = headerRow.findIndex((cell) => String(cell).includes(monthShort) && String(cell).includes(year));
   
+  // Try to find column with Month Year format (e.g. "Dec 2025") or just Month (e.g. "Dec" if year sheet implies year)
+  let monthCol = headerRow.findIndex((cell) => {
+    const s = String(cell);
+    return (s.includes(monthShort) && s.includes(year)) || s === monthShort;
+  });
+
   // Find January column for beginning occupancy
   const janHeader = `Jan ${year}`;
-  const janCol = headerRow.findIndex((cell) => String(cell).includes("Jan") && String(cell).includes(year));
+  const janCol = headerRow.findIndex((cell) => {
+    const s = String(cell);
+    return (s.includes("Jan") && s.includes(year)) || s === "Jan";
+  });
 
-  if (monthCol === -1) {
-    throw new Error(`Month column not found for ${monthHeader}`);
+  // If data is missing for selected period, don't crash, just return empty data
+  if (monthCol === -1 && rows.length > 0) {
+    console.warn(`Month column not found for ${monthHeader}, defaulting to returning empty metrics`);
+    // Fallback: Use last available column or 0? 
+    // Better to return clean empty state so UI doesn't break
   }
 
   // Row mappings based on 2025ALL_PROPERTIES structure
