@@ -200,6 +200,54 @@
   transform: translateY(0);
 }
 
+.buttonEdit,
+.buttonSave {
+  padding: 0 20px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  margin-left: 10px;
+  border: none;
+}
+
+.buttonEdit {
+  background: var(--color-slate-800);
+  color: white;
+}
+
+.buttonEdit:hover {
+  background: var(--color-slate-900);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.buttonSave {
+  background: #10b981;
+  color: white;
+  animation: pulse-green 2s infinite;
+}
+
+.buttonSave:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+
 /* ===== DASHBOARD CONTAINER ===== */
 .dashboard {
   background: linear-gradient(
@@ -503,11 +551,7 @@
 }
 
 /* ===== TABLES ===== */
-.tableWrapper {
-  width: 100%;
-  /* Removed overflow-x: auto */
-  border-radius: var(--radius-md);
-}
+
 
 .table {
   width: 100%;
@@ -564,16 +608,6 @@
 .table td:nth-child(n + 3) {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-}
-
-/* Disposition Notes column styling */
-.dispositionNotes {
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--text-secondary);
-  white-space: normal;
-  font-weight: 400;
-  min-width: 250px;
 }
 
 /* ===== ERROR STATE ===== */

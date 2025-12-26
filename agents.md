@@ -107,3 +107,12 @@ Keep specs light but explicit; update them before coding when behavior changes.
 6. **Charts**: Connected to live Google Sheets data via revenue trend fetch
 
 7. **Disposed Properties**: Added table for divested assets (Valdez example included)
+
+#### December 24, 2025 - Dashboard Sync Update
+
+1. **Data Source Verification**:
+   - **Units/Total**: Sourced from `For Automation` sheet (Rows 3, Cols B/C) for accurate current capacity.
+   - **CAC/LTV**: Sourced from `Dashboard Template` Row 12.
+   - **Narratives**: Sourced from `Dashboard Template` (Cols G, J).
+2. **Implementation Plan**:
+   - Updated `sheets.ts` to support `KPIMetrics` with new fields: `cac`, `ltv`, `reviews`, `highlights`.

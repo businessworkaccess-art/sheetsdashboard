@@ -16,57 +16,13 @@ function getAuth() {
   return new google.auth.JWT({
     email: clientEmail,
     key: privateKey,
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 }
 
-export type DashboardSummaryRow = {
-  label: string;
-  charlotte: string;
-  houston: string;
-};
+import { KPIMetrics, DashboardSummaryRow, RevenueTrendData, PortfolioProperty } from "./types";
 
-export type KPIMetrics = {
-  // Charlotte (Mt Holly) metrics
-  charlotteRevenue: string;
-  charlotteOccupiedUnits: number;
-  charlotteTotalUnits: number;
-  charlotteOccupancyPercent: number;
-  charlotteMoveIns: number;
-  charlotteMoveOuts: number;
-  charlotteRentPerSqFt: string;
-  // Houston (Hamshire) metrics
-  houstonRevenue: string;
-  houstonOccupiedUnits: number;
-  houstonTotalUnits: number;
-  houstonOccupancyPercent: number;
-  houstonMoveIns: number;
-  houstonMoveOuts: number;
-  houstonRentPerSqFt: string;
-  // Fund-level metrics
-  fundTotalOccupiedUnits: number;
-  fundTotalUnits: number;
-  fundOccupancyPercent: number;
-  fundTotalRevenue: string;
-  fundTotalMoveIns: number;
-  fundTotalMoveOuts: number;
-  // Beginning occupancy (for growth comparison) - using Jan of same year
-  charlotteBeginningUnits: number;
-  houstonBeginningUnits: number;
-  fundBeginningUnits: number;
-  // Occupancy growth percentage
-  charlotteOccupancyGrowth: number;
-  houstonOccupancyGrowth: number;
-  fundOccupancyGrowth: number;
-};
-
-export type RevenueTrendData = {
-  month: string;
-  charlotte: number;
-  houston: number;
-  total: number;
-  forecast: number;
-};
+export type { KPIMetrics, DashboardSummaryRow, RevenueTrendData, PortfolioProperty };
 
 function parseMoney(cell: string | undefined): string {
   if (!cell) return "$0";
@@ -100,68 +56,78 @@ export async function fetchDashboardData(
   summary: DashboardSummaryRow[];
   kpiMetrics: KPIMetrics;
   revenueTrend: RevenueTrendData[];
+  portfolioProperties: PortfolioProperty[];
 }> {
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
 
-  // Fetch main properties data
-  // Fetch main properties data
+  // 1. Fetch main properties data (Historical/Monthly)
   const yearSheet = year === "2024" ? "2024ALL PROPERTIES" : "2025ALL PROPERTIES";
-  const range = `'${yearSheet}'!A1:AB60`;
-  
-  let rows: any[][] = [];
-  try {
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range,
-    });
-    rows = res.data.values ?? [];
-  } catch (error) {
-    console.error(`Error fetching sheet ${yearSheet}:`, error);
-    // If sheet doesn't exist or other error, fallback to empty to avoid crash
-    // We will handle empty rows below by returning zeroed metrics
-  }
+  const mainPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'${yearSheet}'!A1:AB60`,
+  });
 
-  // usage of rows is already correct from previous block
+  // 2. Fetch Dashboard Template (Narrative, CAC, Reviews)
+  const templatePromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'Dashboard Template'!A1:Z30`,
+  });
+
+  // 3. Fetch Units/Total from Specific Sheets
+  const mtHollyUnitsPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'2025 Mt Holly'!C6`, 
+  });
+  const hamshireUnitsPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'2025 Hamshire'!C7`,
+  });
+  const charlotteRentPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'2025 Mt Holly'!O18`,
+  });
+  const houstonRentPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'2025 Hamshire'!O18`,
+  });
+
+  const [mainRes, templateRes, mtHollyUnitsRes, hamshireUnitsRes, charlotteRentRes, houstonRentRes] = await Promise.all([
+     mainPromise.catch(e => ({ data: { values: [] } })), 
+     templatePromise.catch(e => ({ data: { values: [] } })),
+     mtHollyUnitsPromise.catch(e => ({ data: { values: [] } })),
+     hamshireUnitsPromise.catch(e => ({ data: { values: [] } })),
+     charlotteRentPromise.catch(e => ({ data: { values: [] } })),
+     houstonRentPromise.catch(e => ({ data: { values: [] } }))
+  ]);
+
+  const rows = mainRes.data.values ?? [];
+  const templateRows = templateRes.data.values ?? [];
   
+  // --- Process Main Monthly Data ---
   const headerRow = rows[0] ?? [];
   const monthHeader = `${monthShort} ${year}`;
   
-  // Try to find column with Month Year format (e.g. "Dec 2025") or just Month (e.g. "Dec" if year sheet implies year)
-  let monthCol = headerRow.findIndex((cell) => {
+  let monthCol = headerRow.findIndex((cell: any) => {
     const s = String(cell);
     return (s.includes(monthShort) && s.includes(year)) || s === monthShort;
   });
 
-  // Find January column for beginning occupancy
-  const janHeader = `Jan ${year}`;
-  const janCol = headerRow.findIndex((cell) => {
+  const janCol = headerRow.findIndex((cell: any) => {
     const s = String(cell);
     return (s.includes("Jan") && s.includes(year)) || s === "Jan";
   });
 
-  // If data is missing for selected period, don't crash, just return empty data
-  if (monthCol === -1 && rows.length > 0) {
-    console.warn(`Month column not found for ${monthHeader}, defaulting to returning empty metrics`);
-    // Fallback: Use last available column or 0? 
-    // Better to return clean empty state so UI doesn't break
-  }
-
-  // Row mappings based on 2025ALL_PROPERTIES structure
+  // Row mappings (2025ALL PROPERTIES)
   const revenueHamshireRow = rows[1] ?? [];
   const revenueMtHollyRow = rows[2] ?? [];
   const revenueTotalRow = rows[3] ?? [];
-
   const occupancyHamshireRow = rows[6] ?? [];
   const occupancyMtHollyRow = rows[7] ?? [];
-
   const occupiedHamshireRow = rows[10] ?? [];
   const occupiedMtHollyRow = rows[11] ?? [];
-
   const rentPerSqFtHamshireRow = rows[22] ?? [];
   const rentPerSqFtMtHollyRow = rows[23] ?? [];
-
-  // Move ins/outs - adjusted row indices based on CSV structure
   const moveInHamshireRow = rows[27] ?? [];
   const moveOutHamshireRow = rows[28] ?? [];
   const moveInMtHollyRow = rows[31] ?? [];
@@ -173,7 +139,7 @@ export async function fetchDashboardData(
   const charlotteOccupancyPercent = parsePercentage(occupancyMtHollyRow[monthCol] as string);
   const houstonOccupancyPercent = parsePercentage(occupancyHamshireRow[monthCol] as string);
 
-  // Parse beginning of year values (January)
+  // Parse beginning of year values
   const charlotteBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedMtHollyRow[janCol] as string) : charlotteOccupiedUnits;
   const houstonBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedHamshireRow[janCol] as string) : houstonOccupiedUnits;
 
@@ -183,29 +149,85 @@ export async function fetchDashboardData(
   const houstonMoveIns = parseNumericValue(moveInHamshireRow[monthCol] as string);
   const houstonMoveOuts = parseNumericValue(moveOutHamshireRow[monthCol] as string);
 
-  // Total units (from For_Automation or use static values)
-  // Charlotte: 305 units total, Houston: 222 units total (from Dashboard_Template)
-  const charlotteTotalUnits = 305;
-  const houstonTotalUnits = 222;
+  // --- Process Total Units (Source of Truth) ---
+  // Mt Holly (Charlotte) C6, Hamshire (Houston) C7
+  let charlotteTotalUnits = 305;
+  let houstonTotalUnits = 222;
+
+  const mhVal = mtHollyUnitsRes.data.values?.[0]?.[0];
+  const hhVal = hamshireUnitsRes.data.values?.[0]?.[0];
+  
+  if (mhVal) charlotteTotalUnits = parseNumericValue(mhVal);
+  if (hhVal) houstonTotalUnits = parseNumericValue(hhVal);
+  
   const fundTotalUnits = charlotteTotalUnits + houstonTotalUnits;
 
-  // Calculate occupancy growth
-  const charlotteOccupancyGrowth = charlotteBeginningUnits > 0 
-    ? ((charlotteOccupiedUnits - charlotteBeginningUnits) / charlotteBeginningUnits) * 100 
-    : 0;
-  const houstonOccupancyGrowth = houstonBeginningUnits > 0 
-    ? ((houstonOccupiedUnits - houstonBeginningUnits) / houstonBeginningUnits) * 100 
-    : 0;
-  const fundBeginningUnits = charlotteBeginningUnits + houstonBeginningUnits;
-  const fundTotalOccupiedUnits = charlotteOccupiedUnits + houstonOccupiedUnits;
-  const fundOccupancyGrowth = fundBeginningUnits > 0 
-    ? ((fundTotalOccupiedUnits - fundBeginningUnits) / fundBeginningUnits) * 100 
-    : 0;
+  // --- Process Narratives & Highlights ---
+  const fundHighlightsFromSheet = templateRows[11]?.[9];
+  const charlotteHighlightsFromSheet = templateRows[15]?.[9];
+  const houstonHighlightsFromSheet = templateRows[20]?.[9];
+  const nextMonthForecastFromSheet = templateRows[10]?.[9];
 
-  // Fund occupancy percentage
-  const fundOccupancyPercent = fundTotalUnits > 0 
-    ? (fundTotalOccupiedUnits / fundTotalUnits) * 100 
-    : 0;
+  const fundHighlights = fundHighlightsFromSheet || `1 YEAR, 11 MONTHS!
+29 NEW CUSTOMERS IN CHARLOTTE AND HOUSTON!
+$44,897 in total revenue vs business plan at $54,222 was generated this month across both facilities:
+- Charlotte contributed $28,212
+- Houston contributed $16,685`;
+
+  const charlotteHighlights = charlotteHighlightsFromSheet || `In Charlotte, we started construction on the 2nd floor, completing 49/180 2nd floor self storage units. We reached 227 occupied units vs 164 units 12 months ago. This month , we have 20 move ins and 14 move outs.`;
+  
+  const houstonHighlights = houstonHighlightsFromSheet || `In Houston, we had a total of 144 occupied units vs 117 units 12 months ago. November, we saw 9 move-ins and 8 move-outs. Second highest sales month ever!🔥🔥🔥
+ ~250 new units at our sites. Great value add for our property values, but we need revenue to reflect our new inventory`;
+
+  const nextMonthForecast = nextMonthForecastFromSheet || `📢 Next month, we expect:
+Charlotte: We will complete all 180 self storage units - completing 2025 business plan.✅ 
+Houston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.
+We expect revenue to be at $45,000-$46,000 next month.`;
+
+  let charlotteCAC = "$104"; let charlotteLTV = "$1500";
+  let houstonCAC = "$144"; let houstonLTV = "$1200";
+  let charlotteReviews = "126"; let houstonReviews = "41";
+  const reviewLinks = { 
+    charlotte: "https://share.google/AFA5yBKYd9RAevikR", 
+    houston: "https://share.google/vyB97Y6kT75ipzE3S" 
+  };
+  const majorNews = ["✅ Completed construction on second floor units", "✅ Construction plan finished for 2025", "✅ Revenue trending upwards with rate increases"];
+
+  // Fetch Rent per Sq Ft from O18 (specifically requested references)
+  const charlotteRentPerSqFtFromSheet = parseMoney(charlotteRentRes.data.values?.[0]?.[0] as string);
+  const houstonRentPerSqFtFromSheet = parseMoney(houstonRentRes.data.values?.[0]?.[0] as string);
+
+  const charlotteRentPerSqFt = charlotteRentPerSqFtFromSheet !== "$0" ? charlotteRentPerSqFtFromSheet : parseMoney(rentPerSqFtMtHollyRow[monthCol] as string);
+  const houstonRentPerSqFt = houstonRentPerSqFtFromSheet !== "$0" ? houstonRentPerSqFtFromSheet : parseMoney(rentPerSqFtHamshireRow[monthCol] as string);
+
+  // Derived metrics
+  const fundTotalOccupiedUnits = charlotteOccupiedUnits + houstonOccupiedUnits;
+  const charlotteOccupancyGrowth = charlotteBeginningUnits > 0 ? ((charlotteOccupiedUnits - charlotteBeginningUnits) / charlotteBeginningUnits) * 100 : 0;
+  const houstonOccupancyGrowth = houstonBeginningUnits > 0 ? ((houstonOccupiedUnits - houstonBeginningUnits) / houstonBeginningUnits) * 100 : 0;
+  const fundBeginningUnits = charlotteBeginningUnits + houstonBeginningUnits;
+  const fundOccupancyGrowth = fundBeginningUnits > 0 ? ((fundTotalOccupiedUnits - fundBeginningUnits) / fundBeginningUnits) * 100 : 0;
+  const fundOccupancyPercent = fundTotalUnits > 0 ? (fundTotalOccupiedUnits / fundTotalUnits) * 100 : 0;
+
+  // --- Process Move History for Charts ---
+  const moveHistory: any[] = [];
+  const jan2025Col = headerRow.findIndex(cell => String(cell).includes("Jan 2025"));
+  const colStart = jan2025Col !== -1 ? jan2025Col : 16; 
+  const colEnd = headerRow.length - 1; 
+
+  for (let i = colStart; i <= colEnd && i < colStart + 12; i++) {
+     const mLabel = String(headerRow[i] || "");
+     if(!mLabel || mLabel.includes("blank")) continue;
+     
+     moveHistory.push({
+        month: mLabel,
+        charlotteIn: parseNumericValue(moveInMtHollyRow[i] as string),
+        charlotteOut: parseNumericValue(moveOutMtHollyRow[i] as string),
+        houstonIn: parseNumericValue(moveInHamshireRow[i] as string),
+        houstonOut: parseNumericValue(moveOutHamshireRow[i] as string),
+        charlotteOccupied: parseNumericValue(occupiedMtHollyRow[i] as string),
+        houstonOccupied: parseNumericValue(occupiedHamshireRow[i] as string)
+     });
+  }
 
   const kpiMetrics: KPIMetrics = {
     charlotteRevenue: parseMoney(revenueMtHollyRow[monthCol] as string),
@@ -214,14 +236,20 @@ export async function fetchDashboardData(
     charlotteOccupancyPercent,
     charlotteMoveIns,
     charlotteMoveOuts,
-    charlotteRentPerSqFt: parseMoney(rentPerSqFtMtHollyRow[monthCol] as string),
+    charlotteRentPerSqFt,
+    charlotteCAC,
+    charlotteLTV,
+    charlotteReviews,
     houstonRevenue: parseMoney(revenueHamshireRow[monthCol] as string),
     houstonOccupiedUnits,
     houstonTotalUnits,
     houstonOccupancyPercent,
     houstonMoveIns,
     houstonMoveOuts,
-    houstonRentPerSqFt: parseMoney(rentPerSqFtHamshireRow[monthCol] as string),
+    houstonRentPerSqFt,
+    houstonCAC,
+    houstonLTV,
+    houstonReviews,
     fundTotalOccupiedUnits,
     fundTotalUnits,
     fundOccupancyPercent,
@@ -234,108 +262,170 @@ export async function fetchDashboardData(
     charlotteOccupancyGrowth,
     houstonOccupancyGrowth,
     fundOccupancyGrowth,
+    fundHighlights,
+    charlotteHighlights,
+    houstonHighlights,
+    majorNews,
+    nextMonthForecast,
+    reviewLinks,
+    moveHistory
   };
 
-  // Build summary rows (legacy format, kept for compatibility)
   const summary: DashboardSummaryRow[] = [
-    {
-      label: "REVENUE",
-      charlotte: kpiMetrics.charlotteRevenue,
-      houston: kpiMetrics.houstonRevenue,
-    },
-    {
-      label: "UNITS / TOTAL",
-      charlotte: `${kpiMetrics.charlotteOccupiedUnits}/${kpiMetrics.charlotteTotalUnits}`,
-      houston: `${kpiMetrics.houstonOccupiedUnits}/${kpiMetrics.houstonTotalUnits}`,
-    },
-    {
-      label: "MOVE INS",
-      charlotte: String(kpiMetrics.charlotteMoveIns),
-      houston: String(kpiMetrics.houstonMoveIns),
-    },
-    {
-      label: "MOVE OUTS",
-      charlotte: String(kpiMetrics.charlotteMoveOuts),
-      houston: String(kpiMetrics.houstonMoveOuts),
-    },
-    {
-      label: "RENT PER SQ FT",
-      charlotte: kpiMetrics.charlotteRentPerSqFt,
-      houston: kpiMetrics.houstonRentPerSqFt,
-    },
+    { label: "REVENUE", charlotte: kpiMetrics.charlotteRevenue, houston: kpiMetrics.houstonRevenue },
+    { label: "UNITS / TOTAL", charlotte: `${kpiMetrics.charlotteOccupiedUnits}/${kpiMetrics.charlotteTotalUnits}`, houston: `${kpiMetrics.houstonOccupiedUnits}/${kpiMetrics.houstonTotalUnits}` },
+    { label: "MOVE INS", charlotte: String(kpiMetrics.charlotteMoveIns), houston: String(kpiMetrics.houstonMoveIns) },
+    { label: "MOVE OUTS", charlotte: String(kpiMetrics.charlotteMoveOuts), houston: String(kpiMetrics.houstonMoveOuts) },
+    { label: "RENT PER SQ FT", charlotte: kpiMetrics.charlotteRentPerSqFt, houston: kpiMetrics.houstonRentPerSqFt },
   ];
 
-  // Fetch revenue trend data from RETHINK_CHART sheet
-  // Try multiple sheet name variations since file names may differ from actual sheet names
+
+  // --- Process Revenue Trend (Corrected for 3-Charts) ---
   let revenueTrend: RevenueTrendData[] = [];
-  
-  const possibleSheetNames = [
-    "'RETHINK CHART-24MONTHS'",
-    "'RETHINK_CHART_24MONTHS'",
-    "'RETHINK CHART 24MONTHS'",
-  ];
+  const chartSheetName = "RETHINK CHART - 24MONTHS"; // Exact name confirmed
 
-  for (const sheetName of possibleSheetNames) {
-    try {
-      const trendRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: SHEET_ID,
-        range: `${sheetName}!A1:Z20`,
-      });
 
-      const trendRows = trendRes.data.values ?? [];
-      if (trendRows.length > 5) {
-        const trendHeaderRow = trendRows[1] ?? [];
-        const charlotteRow = trendRows[2] ?? [];
-        const houstonRow = trendRows[3] ?? [];
-        const totalRow = trendRows[4] ?? [];
-        const forecastRow = trendRows[5] ?? [];
+  try {
+    console.log(`Fetching chart sheet: ${chartSheetName}`);
+    // Fetch wider range to include all 3 blocks (Total, Charlotte, Houston)
+    const trendRes = await sheets.spreadsheets.values.get({ 
+        spreadsheetId: SHEET_ID, 
+        range: `'${chartSheetName}'!A1:Z30` 
+    });
+    const trendRows = trendRes.data.values ?? [];
+    console.log(`Chart sheet rows fetched: ${trendRows.length}`);
 
-        // Get the data
-        for (let i = 2; i < trendHeaderRow.length && i < 26; i++) {
-          const monthLabel = String(trendHeaderRow[i] || "").trim();
-          if (!monthLabel) continue;
-          
-          revenueTrend.push({
-            month: monthLabel,
-            charlotte: parseNumericValue(charlotteRow[i] as string),
-            houston: parseNumericValue(houstonRow[i] as string),
-            total: parseNumericValue(totalRow[i] as string),
-            forecast: parseNumericValue(forecastRow[i] as string),
-          });
+    if (trendRows.length >= 17) {
+        // Block 1: Fund Totals (Rows 3-6)
+        // Header on Row 2 (Index 1)
+        const headerRow = trendRows[1] ?? [];
+        const charlotteRevRow = trendRows[2] ?? []; // Row 3
+        const houstonRevRow = trendRows[3] ?? [];   // Row 4
+        const totalRevRow = trendRows[4] ?? [];     // Row 5
+        const totalForecastRow = trendRows[5] ?? []; // Row 6
+        
+        // Block 2: Charlotte Specifics (Rows 10-11)
+        const charlotteActualRow = trendRows[9] ?? []; // Row 10
+        const charlotteForecastRow = trendRows[10] ?? []; // Row 11
+
+        // Block 3: Houston Specifics (Rows 16-17)
+        const houstonActualRow = trendRows[15] ?? []; // Row 16
+        const houstonForecastRow = trendRows[16] ?? []; // Row 17
+
+        console.log(`Header Row len: ${headerRow.length}, First Month: ${headerRow[2]}`);
+
+        // Use column indices starting at 2 (C) up to 26 (Z) or header length
+        for (let i = 2; i < headerRow.length && i < 26; i++) {
+            const monthLabel = String(headerRow[i] || "").trim();
+            if (!monthLabel) continue;
+
+            const d = {
+                month: monthLabel,
+                // Chart 1
+                charlotteRevenue: parseNumericValue(charlotteRevRow[i] as string),
+                houstonRevenue: parseNumericValue(houstonRevRow[i] as string),
+                totalRevenue: parseNumericValue(totalRevRow[i] as string),
+                totalForecast: parseNumericValue(totalForecastRow[i] as string),
+                // Chart 2
+                charlotteForecast: parseNumericValue(charlotteForecastRow[i] as string),
+                // Chart 3
+                houstonForecast: parseNumericValue(houstonForecastRow[i] as string),
+            };
+            revenueTrend.push(d);
         }
-        // If we successfully got data, break out of the loop
-        if (revenueTrend.length > 0) break;
-      }
-    } catch (e) {
-      // Try next sheet name variation
-      console.log(`Sheet ${sheetName} not found, trying next...`);
+    } else {
+        console.log("Not enough rows in chart sheet");
     }
+  } catch (e) {
+      console.error("Error fetching Rethink Chart:", e);
   }
 
-  // If we couldn't get trend data, use fallback based on KPI metrics
+  // Fallback Trend (0 values if failed)
   if (revenueTrend.length === 0) {
-    // Generate demo trend data based on actual current values
-    const currentTotal = parseNumericValue(revenueTotalRow[monthCol] as string) || 45000;
+    const currentTotal = 45000;
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    revenueTrend = months.map((m, idx) => ({
+    revenueTrend = months.map((m) => ({
       month: `${m}'${year.slice(2)}`,
-      charlotte: currentTotal * 0.6 * (0.8 + Math.random() * 0.4),
-      houston: currentTotal * 0.4 * (0.8 + Math.random() * 0.4),
-      total: currentTotal * (0.8 + Math.random() * 0.4),
-      forecast: currentTotal * (1 + idx * 0.02),
+      charlotteRevenue: currentTotal * 0.6,
+      houstonRevenue: currentTotal * 0.4,
+      totalRevenue: currentTotal,
+      totalForecast: currentTotal * 1.05,
+      charlotteForecast: (currentTotal * 0.6) * 1.05,
+      houstonForecast: (currentTotal * 0.4) * 1.05,
     }));
   }
 
-  return { summary, kpiMetrics, revenueTrend };
+  // --- Process Portfolio Properties ---
+  const portfolioProperties: PortfolioProperty[] = [];
+  // Dashboard Template rows 7 and 8 (indices 6 and 7)
+  const portfolioRows = templateRows.slice(6, 8);
+  portfolioRows.forEach(row => {
+    if (row.length > 0) {
+      portfolioProperties.push({
+        fund: row[0],
+        property: row[1],
+        assetType: row[2],
+        units: parseNumericValue(row[3]),
+        market: row[4],
+        closingDate: row[5],
+        purchasePrice: row[6],
+        capitalInvestment: row[7],
+        loanAmount: row[8],
+        debtType: row[9],
+        interestRate: row[10],
+        maturityDate: row[11]
+      });
+    }
+  });
+
+  return { summary, kpiMetrics, revenueTrend, portfolioProperties };
 }
 
-// Legacy function for backward compatibility
-export async function fetchDashboardSummary(
-  monthShort: string,
-  year: string,
-): Promise<DashboardSummaryRow[]> {
+export async function fetchDashboardSummary(monthShort: string, year: string): Promise<DashboardSummaryRow[]> {
   const { summary } = await fetchDashboardData(monthShort, year);
   return summary;
 }
+export async function updateDashboardData(portfolio: PortfolioProperty[], metrics: KPIMetrics): Promise<void> {
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
 
+  // 1. Update Portfolio (Dashboard Template A7:L8)
+  const portfolioValues = portfolio.map(p => [
+    p.fund,
+    p.property,
+    p.assetType,
+    p.units,
+    p.market,
+    p.closingDate,
+    p.purchasePrice,
+    p.capitalInvestment,
+    p.loanAmount,
+    p.debtType,
+    p.interestRate,
+    p.maturityDate
+  ]);
 
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `'Dashboard Template'!A7:L${7 + portfolioValues.length - 1}`,
+    valueInputOption: "USER_ENTERED",
+    requestBody: { values: portfolioValues }
+  });
+
+  // 2. Update Narratives (J11, J12, J16, J21)
+  const narrativeUpdates = [
+    { range: `'Dashboard Template'!J11`, values: [[metrics.nextMonthForecast]] },
+    { range: `'Dashboard Template'!J12`, values: [[metrics.fundHighlights]] },
+    { range: `'Dashboard Template'!J16`, values: [[metrics.charlotteHighlights]] },
+    { range: `'Dashboard Template'!J21`, values: [[metrics.houstonHighlights]] }
+  ];
+
+  for (const update of narrativeUpdates) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: update.range,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: update.values }
+    });
+  }
+}

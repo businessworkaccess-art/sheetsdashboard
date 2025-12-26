@@ -7,8 +7,8 @@ export async function GET(req: NextRequest) {
     const month = searchParams.get("month") ?? "Jun";
     const year = searchParams.get("year") ?? "2025";
 
-    const { summary, kpiMetrics, revenueTrend } = await fetchDashboardData(month, year);
-    return NextResponse.json({ summary, kpiMetrics, revenueTrend });
+    const { summary, kpiMetrics, revenueTrend, portfolioProperties } = await fetchDashboardData(month, year);
+    return NextResponse.json({ summary, kpiMetrics, revenueTrend, portfolioProperties });
   } catch (error) {
     console.error("Error fetching dashboard data", error);
     return NextResponse.json(
