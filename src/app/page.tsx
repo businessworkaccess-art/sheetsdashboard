@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import KpiGrid from "./_components/KpiGrid";
 import PortfolioTable from "./_components/PortfolioTable";
+import TrendTables from "./_components/TrendTables";
 import { KPIMetrics, RevenueTrendData, PortfolioProperty } from "../lib/types";
 import {
   ComposedChart,
@@ -572,6 +573,11 @@ export default function Home() {
               </div>
             </div>
           </section>
+        )}
+
+        {/* Bottom band – TREND TABLES */}
+        {!loading && !error && (
+          <TrendTables data={revenueTrend} />
         )}
       </div>
     </main>

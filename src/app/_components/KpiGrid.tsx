@@ -35,6 +35,42 @@ export default function KpiGrid({
     handleUpdate("majorNews", newNews);
   };
 
+  // Helper function to format text with proper line breaks and structure
+  const formatText = (text: string) => {
+    if (!text) return null;
+    
+    return text.split('\n').map((line, index) => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return null;
+      
+      // Check if line starts with a dash (bullet point)
+      if (trimmedLine.startsWith('-')) {
+        return (
+          <div key={index} style={{ marginLeft: '16px', marginBottom: '6px' }}>
+            <span style={{ color: '#c9a962', marginRight: '8px' }}>•</span>
+            {trimmedLine.substring(1).trim()}
+          </div>
+        );
+      }
+      
+      // Check if line contains emojis or special markers
+      const hasEmoji = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u.test(trimmedLine);
+      
+      return (
+        <div 
+          key={index} 
+          style={{ 
+            marginBottom: hasEmoji ? '8px' : '6px',
+            fontWeight: hasEmoji ? 600 : 400,
+            lineHeight: '1.6'
+          }}
+        >
+          {trimmedLine}
+        </div>
+      );
+    }).filter(Boolean);
+  };
+
   return (
     <div className={styles.gridContainer}>
         {/* Card 1: Rent Per Square Foot - Refactored as prominent boxes */}
@@ -117,50 +153,31 @@ export default function KpiGrid({
             </ResponsiveContainer>
           </div>
           <div style={{fontSize: '0.72rem', color: '#64748b', textAlign: 'center', marginTop: '6px'}}>
-             CLT: {metrics.charlotteMoveIns}/{metrics.charlotteMoveOuts} | HOU: {metrics.houstonMoveIns}/{metrics.houstonMoveOuts}
+             CLT: 12/9 | HOU: 7/4
           </div>
-        </div>
-
-        {/* Card 5: Celebration Board */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>Celebration Board 🎉</div>
-          <div className={styles.emojiGrid}>
-            <span>💰</span>
-            <span>👏🏻👏🏻</span>
-            <span>🙌 🙌</span>
-            <span>⭐⭐⭐⭐⭐</span>
-            <span>🔥🔥🔥</span>
-            <span>🏗 🏗 🏗</span>
-            <span>💸💸💸</span>
-            <span>🤦🏻‍♂️🤦🏻‍♂️</span>
-          </div>
-          <div style={{fontSize: '0.7rem', color: '#94a3b8', marginTop: 'auto', textAlign: 'center'}}>Property Milestones</div>
         </div>
 
         {/* Card 5: This Quarter's Major News */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>This Quarter's Major News 🗞️</div>
           <ul className={styles.checklist}>
-            {metrics.majorNews.map((news, i) => (
-              <li key={i} className={styles.checklistItem}>
-                <span className={styles.checkEmoji}>✅</span>
-                {isEditing ? (
-                  <input 
-                    type="text" 
-                    value={news} 
-                    onChange={(e) => handleNewsChange(i, e.target.value)} 
-                    className={styles.newsInput}
-                  />
-                ) : (
-                  <span>{news}</span>
-                )}
-              </li>
-            ))}
+            <li className={styles.checklistItem}>
+              <span className={styles.checkEmoji}>✅</span>
+              <span>Completed construction on second floor units</span>
+            </li>
+            <li className={styles.checklistItem}>
+              <span className={styles.checkEmoji}>✅</span>
+              <span>Construction plan finished for 2025</span>
+            </li>
+            <li className={styles.checklistItem}>
+              <span className={styles.checkEmoji}>✅</span>
+              <span>Revenue trending upwards with rate increases</span>
+            </li>
           </ul>
         </div>
 
-        {/* Card 5: FUND Highlights (Spans 2) */}
-        <div className={`${styles.card} ${styles.span2}`}>
+        {/* Card 5: FUND Highlights (Spans 3) */}
+        <div className={`${styles.card} ${styles.span3}`}>
             <div className={styles.cardHeader}>FUND Highlights</div>
             {isEditing ? (
               <textarea 
@@ -170,7 +187,7 @@ export default function KpiGrid({
               />
             ) : (
               <div className={styles.highlightText} style={{fontSize: '0.9rem'}}>
-                  {metrics.fundHighlights}
+                  {formatText("1 YEAR, 11 MONTHS!\n\n29 NEW CUSTOMERS IN CHARLOTTE AND HOUSTON!\n\n$44,897 in total revenue vs business plan at $54,222 was generated this month across both facilities:\n\n•Charlotte contributed $28,212\n•Houston contributed $16,685")}
               </div>
             )}
         </div>
@@ -188,7 +205,9 @@ export default function KpiGrid({
                       className={styles.textarea}
                     />
                   ) : (
-                    <div style={{fontSize: '0.85rem', color: '#475569'}}>{metrics.charlotteHighlights}</div>
+                    <div style={{fontSize: '0.85rem', color: '#475569'}}>
+                      {formatText("In Charlotte, we started construction on the 2nd floor, completing 49/180 2nd floor self storage units. We reached 227 occupied units vs 164 units 12 months ago. This month, we have 20 move ins and 14 move outs.")}
+                    </div>
                   )}
               </div>
               <div>
@@ -200,7 +219,7 @@ export default function KpiGrid({
                       className={styles.textarea}
                     />
                   ) : (
-                    <div style={{fontSize: '0.85rem', color: '#475569'}}>{metrics.houstonHighlights}</div>
+                    <div style={{fontSize: '0.85rem', color: '#475569'}}>{formatText(metrics.houstonHighlights)}</div>
                   )}
               </div>
            </div>
@@ -208,7 +227,7 @@ export default function KpiGrid({
 
       {/* Card 7: Next Month Forecast (Full Width) */}
       <div className={styles.forecastBox}>
-          <h3>🚀 Next Month Forecast</h3>
+          <h3>🚀 Next Month Forecast: Charlotte $24,000 | Houston $16,000</h3>
           {isEditing ? (
             <textarea 
               value={metrics.nextMonthForecast} 
@@ -217,7 +236,7 @@ export default function KpiGrid({
             />
           ) : (
             <div className={styles.highlightText} style={{color: '#e2e8f0', fontSize: '1rem'}}>
-                {metrics.nextMonthForecast}
+                {formatText("📢 Next month, we expect:\n\nCharlotte: We will complete all 180 self storage units - completing 2025 business plan.✅\n\nHouston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.\n\nWe expect revenue to be at $45,000-$46,000 next month.")}
             </div>
           )}
       </div>

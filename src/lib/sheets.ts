@@ -168,6 +168,13 @@ export async function fetchDashboardData(
   const houstonHighlightsFromSheet = templateRows[20]?.[9];
   const nextMonthForecastFromSheet = templateRows[10]?.[9];
 
+  // Debug logging
+  console.log('=== SHEET DATA DEBUG ===');
+  console.log('nextMonthForecastFromSheet (row 11, col J):', nextMonthForecastFromSheet);
+  console.log('fundHighlightsFromSheet (row 12, col J):', fundHighlightsFromSheet);
+  console.log('charlotteHighlightsFromSheet (row 16, col J):', charlotteHighlightsFromSheet);
+  console.log('houstonHighlightsFromSheet (row 21, col J):', houstonHighlightsFromSheet);
+
   const fundHighlights = fundHighlightsFromSheet || `1 YEAR, 11 MONTHS!
 29 NEW CUSTOMERS IN CHARLOTTE AND HOUSTON!
 $44,897 in total revenue vs business plan at $54,222 was generated this month across both facilities:
@@ -180,9 +187,13 @@ $44,897 in total revenue vs business plan at $54,222 was generated this month ac
  ~250 new units at our sites. Great value add for our property values, but we need revenue to reflect our new inventory`;
 
   const nextMonthForecast = nextMonthForecastFromSheet || `📢 Next month, we expect:
-Charlotte: We will complete all 180 self storage units - completing 2025 business plan.✅ 
+Charlotte: We will complete all 180 self storage units - completing 2025 business plan.✅
 Houston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.
 We expect revenue to be at $45,000-$46,000 next month.`;
+
+  console.log('=== FINAL VALUES ===');
+  console.log('nextMonthForecast:', nextMonthForecast);
+  console.log('fundHighlights:', fundHighlights);
 
   let charlotteCAC = "$104"; let charlotteLTV = "$1500";
   let houstonCAC = "$144"; let houstonLTV = "$1200";
