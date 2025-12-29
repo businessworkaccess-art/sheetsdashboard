@@ -57,18 +57,18 @@ export default function TrendTables({ data }: TrendTablesProps) {
     <section className={styles.container}>
       {renderTable("Fund Totals", [
         { label: "Charlotte Revenue", key: "charlotteRevenue", color: "#3b82f6" },
-        { label: "Houston Revenue", key: "houstonRevenue", color: "#c9a962" },
+        { label: "Houston Revenue", key: "houstonRevenue", color: "#4169E1" },
         { label: "Total Revenue", key: "totalRevenue" },
         { label: "Total Forecast", key: "totalForecast", color: "#64748b" },
       ])}
 
       {renderTable("Charlotte Monthly", [
-        { label: "Actual Revenue", key: "charlotteRevenue", color: "#c9a962" },
+        { label: "Actual Revenue", key: "charlotteRevenue", color: "#4169E1" },
         { label: "Forecast Revenue", key: "charlotteForecast", color: "#64748b" },
       ])}
 
       {renderTable("Houston Monthly", [
-        { label: "Actual Revenue", key: "houstonRevenue", color: "#c9a962" },
+        { label: "Actual Revenue", key: "houstonRevenue", color: "#4169E1" },
         { label: "Forecast Revenue", key: "houstonForecast", color: "#64748b" },
       ])}
     </section>

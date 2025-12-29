@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import KpiGrid from "./_components/KpiGrid";
 import PortfolioTable from "./_components/PortfolioTable";
 import TrendTables from "./_components/TrendTables";
+import RadarMetricChart from "./_components/RadarMetricChart";
 import { KPIMetrics, RevenueTrendData, PortfolioProperty } from "../lib/types";
 import {
   ComposedChart,
@@ -105,9 +106,9 @@ export default function Home() {
       const res = await fetch("/api/portfolio/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           portfolio: portfolioData,
-          kpiMetrics: kpiMetrics 
+          kpiMetrics: kpiMetrics,
         }),
       });
 
@@ -302,13 +303,17 @@ export default function Home() {
             >
               <PDFIcon /> Export PDF
             </button>
-            <button 
-              type="button" 
-              onClick={() => isEditing ? handleSave() : setIsEditing(true)} 
+            <button
+              type="button"
+              onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
               className={isEditing ? styles.buttonSave : styles.buttonEdit}
               disabled={isSaving}
             >
-              {isSaving ? "Saving..." : (isEditing ? "Save Changes" : "Edit Dashboard")}
+              {isSaving
+                ? "Saving..."
+                : isEditing
+                ? "Save Changes"
+                : "Edit Dashboard"}
             </button>
           </div>
         </div>
@@ -346,9 +351,48 @@ export default function Home() {
             </div>
             <div className={styles.headerMiddle}>
               <div className={styles.headerLabel}>Original Business Plan</div>
-              <div className={styles.headerBody}>
-                Increase value through a combination of increasing occupancy,
-                improving management, revenue optimization and increasing rents.
+              <div className={styles.businessPlanGrid}>
+                <div className={styles.businessPlanProperty}>
+                  <div className={styles.propertyName}>📍 Charlotte</div>
+                  <div className={styles.propertyDetails}>
+                    <span className={styles.propertyHighlight}>$2.70M</span> •
+                    65,000 sq ft on 6 acres
+                  </div>
+                  <div className={styles.propertyFinancing}>
+                    Seller financing: 5 years @ 6% interest only
+                  </div>
+                  <div className={styles.propertyPhases}>
+                    <div>
+                      <strong>Phase 1:</strong> 120 relocatable + 220 first
+                      floor units ($750K) → 90% in 1.5 yrs
+                    </div>
+                    <div>
+                      <strong>Phase 2:</strong> 220 second floor units ($400K) →
+                      90% by year 4 | ~524 units
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.businessPlanProperty}>
+                  <div className={styles.propertyName}>📍 Houston</div>
+                  <div className={styles.propertyDetails}>
+                    <span className={styles.propertyHighlight}>$1.50M</span> •
+                    30,000 sq ft on 4 acres
+                  </div>
+                  <div className={styles.propertyFinancing}>
+                    Bank financing: 2 years interest only • 46% occupancy at
+                    acquisition
+                  </div>
+                  <div className={styles.propertyPhases}>
+                    <div>
+                      <strong>Phase 1:</strong> Lease up climate controlled
+                      units to 90% occupancy
+                    </div>
+                    <div>
+                      <strong>Phase 2:</strong> Build non-climate controlled +
+                      RV/boat parking | ~345 units
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div className={styles.headerRight}>
@@ -373,10 +417,10 @@ export default function Home() {
           <div className={styles.cardHeader}>
             <h2>Portfolio Overview</h2>
           </div>
-          <PortfolioTable 
-            data={portfolioData} 
-            isEditing={isEditing} 
-            onUpdate={setPortfolioData} 
+          <PortfolioTable
+            data={portfolioData}
+            isEditing={isEditing}
+            onUpdate={setPortfolioData}
           />
         </section>
 
@@ -390,9 +434,9 @@ export default function Home() {
         {error && <p className={styles.error}>{error}</p>}
 
         {!loading && !error && kpiMetrics && (
-          <KpiGrid 
-            metrics={kpiMetrics} 
-            isEditing={isEditing} 
+          <KpiGrid
+            metrics={kpiMetrics}
+            isEditing={isEditing}
             onUpdate={setKpiMetrics}
           />
         )}
@@ -448,7 +492,7 @@ export default function Home() {
                       dataKey="houstonRev"
                       name="Houston"
                       stackId="a"
-                      fill="#c9a962"
+                      fill="#4169E1"
                       radius={[0, 0, 0, 0]}
                     />
                     <Bar
@@ -510,7 +554,7 @@ export default function Home() {
                     <Bar
                       dataKey="charlotteRev"
                       name="Actuals"
-                      fill="#c9a962"
+                      fill="#4169E1"
                       radius={[4, 4, 0, 0]}
                     />
                   </ComposedChart>
@@ -565,7 +609,7 @@ export default function Home() {
                     <Bar
                       dataKey="houstonRev"
                       name="Actuals"
-                      fill="#c9a962"
+                      fill="#4169E1"
                       radius={[4, 4, 0, 0]}
                     />
                   </ComposedChart>
@@ -575,10 +619,15 @@ export default function Home() {
           </section>
         )}
 
-        {/* Bottom band – TREND TABLES */}
-        {!loading && !error && (
-          <TrendTables data={revenueTrend} />
+        {/* Growth Radar Chart */}
+        {!loading && !error && kpiMetrics && (
+           <section className={styles.card} style={{ minHeight: '520px', marginBottom: '20px' }}>
+              <RadarMetricChart metrics={kpiMetrics} />
+           </section>
         )}
+
+        {/* Bottom band – TREND TABLES */}
+        {!loading && !error && <TrendTables data={revenueTrend} />}
       </div>
     </main>
   );

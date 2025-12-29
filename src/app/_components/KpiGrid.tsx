@@ -47,7 +47,7 @@ export default function KpiGrid({
       if (trimmedLine.startsWith('-')) {
         return (
           <div key={index} style={{ marginLeft: '16px', marginBottom: '6px' }}>
-            <span style={{ color: '#c9a962', marginRight: '8px' }}>•</span>
+            <span style={{ color: '#4169E1', marginRight: '8px' }}>•</span>
             {trimmedLine.substring(1).trim()}
           </div>
         );
@@ -124,7 +124,7 @@ export default function KpiGrid({
                   itemStyle={{ padding: '0px' }}
                 />
                 <Bar dataKey="charlotteOccupied" name="Charlotte" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="houstonOccupied" name="Houston" fill="#c9a962" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="houstonOccupied" name="Houston" fill="#4169E1" radius={[2, 2, 0, 0]} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -147,8 +147,8 @@ export default function KpiGrid({
                 />
                 <Bar dataKey="charlotteIn" name="CLT In" fill="#3b82f6" barSize={8} />
                 <Line type="monotone" dataKey="charlotteOut" name="CLT Out" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                <Bar dataKey="houstonIn" name="HOU In" fill="#c9a962" barSize={8} />
-                <Line type="monotone" dataKey="houstonOut" name="HOU Out" stroke="#c9a962" strokeWidth={2} dot={false} />
+                <Bar dataKey="houstonIn" name="HOU In" fill="#4169E1" barSize={8} />
+                <Line type="monotone" dataKey="houstonOut" name="HOU Out" stroke="#4169E1" strokeWidth={2} dot={false} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -174,6 +174,35 @@ export default function KpiGrid({
               <span>Revenue trending upwards with rate increases</span>
             </li>
           </ul>
+        </div>
+
+        {/* Card 6: Client Acquisition Cost / LTV */}
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>CAC / LTV 💰</div>
+          <div className={styles.reviewBoxes}>
+            <div className={styles.reviewBox}>
+              <div className={styles.reviewMarket}>Charlotte</div>
+              <div className={styles.metricRow} style={{ width: '100%', marginBottom: '4px' }}>
+                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>CAC</span>
+                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.charlotteCAC}</span>
+              </div>
+              <div className={styles.metricRow} style={{ width: '100%', margin: 0 }}>
+                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>LTV</span>
+                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.charlotteLTV}</span>
+              </div>
+            </div>
+            <div className={styles.reviewBox}>
+              <div className={styles.reviewMarket}>Houston</div>
+              <div className={styles.metricRow} style={{ width: '100%', marginBottom: '4px' }}>
+                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>CAC</span>
+                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.houstonCAC}</span>
+              </div>
+              <div className={styles.metricRow} style={{ width: '100%', margin: 0 }}>
+                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>LTV</span>
+                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.houstonLTV}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Card 5: FUND Highlights (Spans 3) */}

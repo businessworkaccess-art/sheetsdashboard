@@ -242,11 +242,16 @@
 }
 
 @keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }
-
 
 /* ===== DASHBOARD CONTAINER ===== */
 .dashboard {
@@ -493,7 +498,7 @@
 
 .growthBarFillCurrent {
   height: 100%;
-  background: linear-gradient(90deg, #b8973f 0%, #c9a962 100%);
+  background: linear-gradient(90deg, #3457C9 0%, #4169E1 100%);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -551,7 +556,6 @@
 }
 
 /* ===== TABLES ===== */
-
 
 .table {
   width: 100%;
@@ -657,9 +661,9 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(10, 22, 40, 0.92) 0%,
-    rgba(15, 36, 68, 0.88) 50%,
-    rgba(26, 50, 85, 0.85) 100%
+    rgba(10, 22, 40, 0.65) 0%,
+    rgba(15, 36, 68, 0.55) 50%,
+    rgba(26, 50, 85, 0.50) 100%
   );
 }
 
@@ -765,6 +769,73 @@
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.5;
+}
+
+/* ===== BUSINESS PLAN GRID ===== */
+.businessPlanGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.businessPlanProperty {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.propertyName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.propertyDetails {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+}
+
+.propertyHighlight {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.propertyFinancing {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.propertyPhases {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.propertyPhases div {
+  margin-bottom: 4px;
+}
+
+.propertyPhases strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .businessPlanGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 /* ===== GRID LAYOUTS ===== */

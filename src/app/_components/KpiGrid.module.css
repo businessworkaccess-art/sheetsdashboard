@@ -96,7 +96,7 @@
 
 .reviewRating {
   font-size: 0.75rem;
-  color: #b8973f;
+  color: #4169E1;
   margin: 4px 0 8px;
   font-weight: 600;
 }
@@ -152,7 +152,7 @@
 }
 
 .forecastBox h3 {
-  color: #c9a962;
+  color: #4169E1;
   margin: 0 0 12px 0;
   font-size: 1.1rem;
   display: flex;
@@ -254,6 +254,6 @@
 }
 
 .textareaDark:focus {
-  border-color: #c9a962;
+  border-color: #4169E1;
   background: rgba(255, 255, 255, 0.08);
 }
