@@ -180,9 +180,9 @@ export default function Home() {
     await new Promise(resolve => setTimeout(resolve, 100));
 
     const canvas = await html2canvas(dashboardRef.current, {
-      scale: 2, // Higher scale for better resolution
+      scale: 3, // Increased scale for clearer text/colors
       useCORS: true,
-      backgroundColor: "#f1f5f9",
+      backgroundColor: null, // Transparent/Use CSS background
       logging: false,
       windowWidth: dashboardRef.current.scrollWidth,
       windowHeight: dashboardRef.current.scrollHeight
