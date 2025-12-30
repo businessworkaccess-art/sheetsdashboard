@@ -172,25 +172,68 @@ export default function Home() {
 
   async function handleExport(format: "png" | "jpeg" | "pdf") {
     if (!dashboardRef.current) return;
+    
+    // Scroll to top to ensure nothing is cut off
+    window.scrollTo(0, 0);
+    
+    // Wait a brief moment for any scroll effects
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     const canvas = await html2canvas(dashboardRef.current, {
-      scale: 2,
+      scale: 2, // Higher scale for better resolution
       useCORS: true,
       backgroundColor: "#f1f5f9",
+      logging: false,
+      windowWidth: dashboardRef.current.scrollWidth,
+      windowHeight: dashboardRef.current.scrollHeight
     });
+
     const imageData =
       format === "jpeg"
         ? canvas.toDataURL("image/jpeg", 0.95)
         : canvas.toDataURL("image/png");
+        
     const filename = `rethink-dashboard-${year}-${month}.${
       format === "pdf" ? "pdf" : format
     }`;
+
     if (format === "pdf") {
+      // PROPER SCALING LOGIC FOR A4 LANDSCAPE
       const pdf = new jsPDF({
         orientation: "landscape",
-        unit: "px",
-        format: [canvas.width, canvas.height],
+        unit: "mm",
+        format: "a4"
       });
-      pdf.addImage(imageData, "PNG", 0, 0, canvas.width, canvas.height);
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      
+      // Calculate ratio to fit width
+      const ratio = pageWidth / canvasWidth;
+      
+      // Scaled dimensions
+      const imgWidth = canvasWidth * ratio;
+      const imgHeight = canvasHeight * ratio;
+      
+      // If height is still too big for one page, you might need to adjust or let it spill (but usually dashboard fits on one)
+      // For now we fit by width. If it's taller than pageHeight, it will crop or stretch depending on logic.
+      // Better strategy: "Fit to Best"
+      
+      const widthRatio = pageWidth / canvasWidth;
+      const heightRatio = pageHeight / canvasHeight;
+      const bestRatio = Math.min(widthRatio, heightRatio); // Fit entirely within page
+      
+      const finalWidth = canvasWidth * bestRatio;
+      const finalHeight = canvasHeight * bestRatio;
+      
+      // Center it
+      const x = (pageWidth - finalWidth) / 2;
+      const y = (pageHeight - finalHeight) / 2;
+
+      pdf.addImage(imageData, "PNG", x, y, finalWidth, finalHeight);
       pdf.save(filename);
     } else {
       const link = document.createElement("a");
