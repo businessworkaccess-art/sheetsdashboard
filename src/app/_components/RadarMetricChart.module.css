@@ -38,11 +38,11 @@
   font-weight: 500;
 }
 
-.dotBlue {
+.dotAqua {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #4169E1;
+  background: #06b6d4; /* Aqua/Cyan-500 */
 }
 
 .dotGray {
@@ -62,14 +62,13 @@
 
 .categoryLabel {
   position: absolute;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1a2d4a; /* Royal blue/navy */
-  opacity: 0.8;
+  font-size: 20px;
+  font-weight: 300; /* Lighter weight like the image */
+  color: #1e3a8a; /* Deep blue */
+  opacity: 1;
   pointer-events: none;
   z-index: 10;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
 }
 
 /* Tooltip Styles */

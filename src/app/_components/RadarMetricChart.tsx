@@ -148,7 +148,7 @@ export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
         <div className={styles.tooltip}>
           <p className={styles.tooltipLabel}>{label}</p>
           <div className={styles.tooltipRow}>
-            <span className={styles.dotBlue}></span>
+            <span className={styles.dotAqua}></span>
             <span>Current: </span>
             <span className={styles.tooltipValue}>{metric?.valueA}</span>
           </div>
@@ -169,7 +169,7 @@ export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
         <h3>Growth Indicators</h3>
         <div className={styles.legend}>
           <div className={styles.legendItem}>
-            <span className={styles.dotBlue}></span> Current Month
+            <span className={styles.dotAqua}></span> Current Month
           </div>
           <div className={styles.legendItem}>
             <span className={styles.dotGray}></span> Previous Month
@@ -188,9 +188,9 @@ export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
         {/* Retention: Covers Reviews (Bottom-Left) & Ratio (Top-Left) */}
         <div className={styles.categoryLabel} style={{ top: '50%', left: '2%', transform: 'translateY(-50%)' }}>Retention</div>
 
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
-            <PolarGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart cx="50%" cy="50%" outerRadius="60%" data={data}>
+            <PolarGrid stroke="#94a3b8" strokeOpacity={0.4} />
             <PolarAngleAxis 
                dataKey="subject" 
                tick={{ fill: '#475569', fontSize: 12, fontWeight: 600 }} 
@@ -204,16 +204,16 @@ export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
               stroke="#94a3b8"
               strokeWidth={2}
               fill="#cbd5e1"
-              fillOpacity={0.4}
+              fillOpacity={0.3}
             />
             
-            {/* Current Month (Blue) */}
+            {/* Current Month (Aqua) */}
             <Radar
               name="Current"
               dataKey="A"
-              stroke="#4169E1"
+              stroke="#06b6d4" 
               strokeWidth={3}
-              fill="#4169E1"
+              fill="#06b6d4"
               fillOpacity={0.5}
             />
             <Tooltip content={<CustomTooltip />} />

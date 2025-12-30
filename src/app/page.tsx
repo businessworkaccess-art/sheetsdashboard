@@ -492,7 +492,7 @@ export default function Home() {
                       dataKey="houstonRev"
                       name="Houston"
                       stackId="a"
-                      fill="#4169E1"
+                      fill="#eab308"
                       radius={[0, 0, 0, 0]}
                     />
                     <Bar
@@ -609,7 +609,7 @@ export default function Home() {
                     <Bar
                       dataKey="houstonRev"
                       name="Actuals"
-                      fill="#4169E1"
+                      fill="#eab308"
                       radius={[4, 4, 0, 0]}
                     />
                   </ComposedChart>

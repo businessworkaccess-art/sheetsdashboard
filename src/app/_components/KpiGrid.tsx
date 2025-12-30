@@ -35,15 +35,12 @@ export default function KpiGrid({
     handleUpdate("majorNews", newNews);
   };
 
-  // Helper function to format text with proper line breaks and structure
+  // Helper function to format text with proper line breaks
   const formatText = (text: string) => {
     if (!text) return null;
-    
     return text.split('\n').map((line, index) => {
       const trimmedLine = line.trim();
       if (!trimmedLine) return null;
-      
-      // Check if line starts with a dash (bullet point)
       if (trimmedLine.startsWith('-')) {
         return (
           <div key={index} style={{ marginLeft: '16px', marginBottom: '6px' }}>
@@ -52,209 +49,200 @@ export default function KpiGrid({
           </div>
         );
       }
-      
-      // Check if line contains emojis or special markers
       const hasEmoji = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u.test(trimmedLine);
-      
       return (
-        <div 
-          key={index} 
-          style={{ 
-            marginBottom: hasEmoji ? '8px' : '6px',
-            fontWeight: hasEmoji ? 600 : 400,
-            lineHeight: '1.6'
-          }}
-        >
+        <div key={index} style={{ marginBottom: hasEmoji ? '8px' : '6px', fontWeight: hasEmoji ? 600 : 400, lineHeight: '1.6' }}>
           {trimmedLine}
         </div>
       );
     }).filter(Boolean);
   };
 
+  const ChartTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', border: '1px solid #e2e8f0', padding: '8px', borderRadius: '4px', fontSize: '0.75rem', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <p style={{ fontWeight: 600, marginBottom: '4px' }}>{label}</p>
+          {payload.map((entry: any, index: number) => (
+             <div key={index} style={{ color: entry.color, marginBottom: '2px' }}>
+               {entry.name}: {entry.value}
+             </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className={styles.gridContainer}>
-        {/* Card 1: Rent Per Square Foot - Refactored as prominent boxes */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>Rent Per Square Foot 📈</div>
-          <div className={styles.reviewBoxes}>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Charlotte</div>
-              <div className={styles.reviewValue}>{metrics.charlotteRentPerSqFt}</div>
-              <div className={styles.reviewRating}>Target: $1.00+</div>
+        {/* TOP SECTION: Fund Highlights & News */}
+        <div className={styles.headerSection}>
+            <div className={styles.propertyColumn}>
+                <div className={styles.propertyHeader} style={{ color: '#0f172a', borderColor: '#cbd5e1' }}>
+                    FUND HIGHLIGHTS 🌟
+                </div>
+                {isEditing ? (
+                  <textarea 
+                    value={metrics.fundHighlights} 
+                    onChange={(e) => handleUpdate("fundHighlights", e.target.value)} 
+                    className={styles.textarea}
+                  />
+                ) : (
+                  <div className={styles.highlightText}>
+                    {formatText(metrics.fundHighlights || `📢 Next month, we expect:
+Charlotte: We will complete all 180 self storage units - completing 2025 business plan.✅
+Houston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.
+We expect revenue to be at $45,000-$46,000 next month.`)}
+                  </div>
+                )}
             </div>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Houston</div>
-              <div className={styles.reviewValue}>{metrics.houstonRentPerSqFt}</div>
-              <div className={styles.reviewRating}>Target: $0.80+</div>
+
+            <div className={styles.propertyColumn}>
+                <div className={styles.propertyHeader} style={{ color: '#0f172a', borderColor: '#cbd5e1' }}>
+                    Major News 🗞️
+                </div>
+                <ul className={styles.checklist}>
+                   {metrics.majorNews.map((news, idx) => (
+                      <li key={idx} className={styles.checklistItem}>
+                         <span className={styles.checkEmoji}>✅</span>
+                         {isEditing ? (
+                           <input 
+                             className={styles.newsInput}
+                             value={news}
+                             onChange={(e) => handleNewsChange(idx, e.target.value)}
+                           />
+                         ) : <span>{news.replace('✅', '').trim()}</span>}
+                      </li>
+                   ))}
+                </ul>
             </div>
-          </div>
         </div>
 
-        {/* Card 2: 5 Star Reviews - Refactored as prominent boxes */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>Google Reviews ⭐</div>
-          <div className={styles.reviewBoxes}>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Charlotte</div>
-              <div className={styles.reviewValue}>{metrics.charlotteReviews}</div>
-              <div className={styles.reviewRating}>4.9/5 ⭐⭐⭐⭐⭐</div>
-              <a href={metrics.reviewLinks.charlotte} className={styles.reviewBtn} target="_blank">View on Google</a>
-            </div>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Houston</div>
-              <div className={styles.reviewValue}>{metrics.houstonReviews}</div>
-              <div className={styles.reviewRating}>4.6/5 ⭐⭐⭐⭐✬</div>
-              <a href={metrics.reviewLinks.houston} className={styles.reviewBtn} target="_blank">View on Google</a>
-            </div>
-          </div>
-          <div style={{fontSize: '0.75rem', color: '#94a3b8', marginTop: '12px', textAlign: 'center'}}>Help us grow! Leave a 5-star review.</div>
-        </div>
-
-        {/* Card 3: Units / Total Growth */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>Units / Total 🏢</div>
-          <div style={{ height: '100px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={metrics.moveHistory}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="month" hide />
-                <YAxis domain={[0, 'auto']} hide />
-                <Tooltip 
-                  contentStyle={{ fontSize: '10px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                  itemStyle={{ padding: '0px' }}
-                />
-                <Bar dataKey="charlotteOccupied" name="Charlotte" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="houstonOccupied" name="Houston" fill="#4169E1" radius={[2, 2, 0, 0]} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-          <div style={{fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', marginTop: '8px', fontWeight: 600}}>
-             CLT: {metrics.charlotteOccupiedUnits}/{metrics.charlotteTotalUnits} | HOU: {metrics.houstonOccupiedUnits}/{metrics.houstonTotalUnits}
-          </div>
-        </div>
-
-        {/* Card 4: MoveIn / Move Outs Activity */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>MoveIn / Move Outs 🔄</div>
-          <div style={{ height: '100px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={metrics.moveHistory}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="month" hide />
-                <YAxis hide />
-                <Tooltip 
-                  contentStyle={{ fontSize: '10px', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                />
-                <Bar dataKey="charlotteIn" name="CLT In" fill="#3b82f6" barSize={8} />
-                <Line type="monotone" dataKey="charlotteOut" name="CLT Out" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                <Bar dataKey="houstonIn" name="HOU In" fill="#4169E1" barSize={8} />
-                <Line type="monotone" dataKey="houstonOut" name="HOU Out" stroke="#4169E1" strokeWidth={2} dot={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-          <div style={{fontSize: '0.72rem', color: '#64748b', textAlign: 'center', marginTop: '6px'}}>
-             CLT: 12/9 | HOU: 7/4
-          </div>
-        </div>
-
-        {/* Card 5: This Quarter's Major News */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>This Quarter's Major News 🗞️</div>
-          <ul className={styles.checklist}>
-            <li className={styles.checklistItem}>
-              <span className={styles.checkEmoji}>✅</span>
-              <span>Completed construction on second floor units</span>
-            </li>
-            <li className={styles.checklistItem}>
-              <span className={styles.checkEmoji}>✅</span>
-              <span>Construction plan finished for 2025</span>
-            </li>
-            <li className={styles.checklistItem}>
-              <span className={styles.checkEmoji}>✅</span>
-              <span>Revenue trending upwards with rate increases</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Card 6: Client Acquisition Cost / LTV */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>CAC / LTV 💰</div>
-          <div className={styles.reviewBoxes}>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Charlotte</div>
-              <div className={styles.metricRow} style={{ width: '100%', marginBottom: '4px' }}>
-                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>CAC</span>
-                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.charlotteCAC}</span>
-              </div>
-              <div className={styles.metricRow} style={{ width: '100%', margin: 0 }}>
-                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>LTV</span>
-                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.charlotteLTV}</span>
-              </div>
-            </div>
-            <div className={styles.reviewBox}>
-              <div className={styles.reviewMarket}>Houston</div>
-              <div className={styles.metricRow} style={{ width: '100%', marginBottom: '4px' }}>
-                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>CAC</span>
-                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.houstonCAC}</span>
-              </div>
-              <div className={styles.metricRow} style={{ width: '100%', margin: 0 }}>
-                 <span className={styles.metricLabel} style={{fontSize: '0.8rem'}}>LTV</span>
-                 <span className={styles.metricValue} style={{fontSize: '1rem'}}>{metrics.houstonLTV}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 5: FUND Highlights (Spans 3) */}
-        <div className={`${styles.card} ${styles.span3}`}>
-            <div className={styles.cardHeader}>FUND Highlights</div>
-            {isEditing ? (
-              <textarea 
-                value={metrics.fundHighlights} 
-                onChange={(e) => handleUpdate("fundHighlights", e.target.value)} 
-                className={styles.textarea}
-              />
-            ) : (
-              <div className={styles.highlightText} style={{fontSize: '0.9rem'}}>
-                  {formatText("1 YEAR, 11 MONTHS!\n\n29 NEW CUSTOMERS IN CHARLOTTE AND HOUSTON!\n\n$44,897 in total revenue vs business plan at $54,222 was generated this month across both facilities:\n\n•Charlotte contributed $28,212\n•Houston contributed $16,685")}
-              </div>
-            )}
-        </div>
-
-        {/* Card 6: Property Highlights (Spans 3) */}
-        <div className={`${styles.card} ${styles.span3}`}>
-           <div className={styles.cardHeader}>Property Highlights</div>
-           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px'}}>
-              <div>
-                  <div style={{fontWeight: 700, fontSize: '0.85rem', color: '#1e293b', marginBottom: '8px'}}>CHARLOTTE 🏙️</div>
-                  {isEditing ? (
+        {/* PROPERTY GRID: Charlotte vs Houston */}
+        <div className={styles.propertyGrid}>
+            {/* CHARLOTTE COLUMN */}
+            <div className={styles.propertyColumn}>
+                <div className={`${styles.propertyHeader} ${styles.charlotteHeader}`}>
+                     <span>CHARLOTTE 🏙️</span>
+                </div>
+                
+                {/* 1. Highlights Text */}
+                {isEditing ? (
                     <textarea 
                       value={metrics.charlotteHighlights} 
                       onChange={(e) => handleUpdate("charlotteHighlights", e.target.value)} 
                       className={styles.textarea}
                     />
-                  ) : (
-                    <div style={{fontSize: '0.85rem', color: '#475569'}}>
-                      {formatText("In Charlotte, we started construction on the 2nd floor, completing 49/180 2nd floor self storage units. We reached 227 occupied units vs 164 units 12 months ago. This month, we have 20 move ins and 14 move outs.")}
+                ) : (
+                    <div className={styles.highlightText} style={{minHeight: '80px'}}>
+                        {formatText(metrics.charlotteHighlights)}
                     </div>
-                  )}
-              </div>
-              <div>
-                  <div style={{fontWeight: 700, fontSize: '0.85rem', color: '#1e293b', marginBottom: '8px'}}>HOUSTON 🤠</div>
-                  {isEditing ? (
+                )}
+
+                {/* 2. Chart (Move In / Move Out) - Blue */}
+                <div className={styles.chartContainer}>
+                    <div style={{fontSize:'0.7rem', color:'#64748b', marginBottom:'4px', textAlign:'center', fontWeight:600}}>MOVE IN (Bar) vs MOVE OUT (Line)</div>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={metrics.moveHistory}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="month" hide />
+                        <YAxis hide />
+                        <Tooltip content={<ChartTooltip />} />
+                        <Bar dataKey="charlotteIn" name="Move In" fill="#3b82f6" barSize={20} radius={[4, 4, 0, 0]} />
+                        <Line type="monotone" dataKey="charlotteOut" name="Move Out" stroke="#2563eb" strokeWidth={3} dot={{r:3}} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* 3. KPIs */}
+                <div className={styles.kpiRow}>
+                    <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Revenue</div>
+                        <div className={styles.kpiValue} style={{color:'#3b82f6'}}>{metrics.charlotteRevenue}</div>
+                    </div>
+                     <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Occupancy</div>
+                        <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
+                           {metrics.charlotteOccupiedUnits}<span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:400}}>/{metrics.charlotteTotalUnits}</span>
+                        </div>
+                        <div style={{fontSize:'0.75rem', color:'#3b82f6', fontWeight:600}}>{metrics.charlotteOccupancyPercent}%</div>
+                    </div>
+                    <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Rent / SqFt</div>
+                        <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteRentPerSqFt}</div>
+                    </div>
+                    <div className={styles.kpiBox}>
+                         <div className={styles.kpiLabel}>Reviews</div>
+                         <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteReviews}</div>
+                         <div style={{fontSize:'0.75rem', marginBottom:'2px'}}>4.9/5 ⭐⭐⭐⭐⭐</div>
+                         <a href={metrics.reviewLinks.charlotte} style={{fontSize:'0.7rem', color:'#3b82f6', textDecoration:'underline'}} target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+
+            {/* HOUSTON COLUMN */}
+            <div className={styles.propertyColumn}>
+                <div className={`${styles.propertyHeader} ${styles.houstonHeader}`}>
+                     <span>HOUSTON 🤠</span>
+                </div>
+
+                {/* 1. Highlights Text */}
+                {isEditing ? (
                     <textarea 
                       value={metrics.houstonHighlights} 
                       onChange={(e) => handleUpdate("houstonHighlights", e.target.value)} 
                       className={styles.textarea}
                     />
-                  ) : (
-                    <div style={{fontSize: '0.85rem', color: '#475569'}}>{formatText(metrics.houstonHighlights)}</div>
-                  )}
-              </div>
-           </div>
+                ) : (
+                    <div className={styles.highlightText} style={{minHeight: '80px'}}>
+                        {formatText(metrics.houstonHighlights)}
+                    </div>
+                )}
+
+                {/* 2. Chart (Move In / Move Out) - Yellow */}
+                <div className={styles.chartContainer}>
+                    <div style={{fontSize:'0.7rem', color:'#64748b', marginBottom:'4px', textAlign:'center', fontWeight:600}}>MOVE IN (Bar) vs MOVE OUT (Line)</div>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={metrics.moveHistory}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="month" hide />
+                        <YAxis hide />
+                        <Tooltip content={<ChartTooltip />} />
+                        <Bar dataKey="houstonIn" name="Move In" fill="#eab308" barSize={20} radius={[4, 4, 0, 0]} />
+                        <Line type="monotone" dataKey="houstonOut" name="Move Out" stroke="#ca8a04" strokeWidth={3} dot={{r:3}} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* 3. KPIs */}
+                <div className={styles.kpiRow}>
+                    <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Revenue</div>
+                        <div className={styles.kpiValue} style={{color:'#eab308'}}>{metrics.houstonRevenue}</div>
+                    </div>
+                     <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Occupancy</div>
+                        <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
+                           {metrics.houstonOccupiedUnits}<span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:400}}>/{metrics.houstonTotalUnits}</span>
+                        </div>
+                        <div style={{fontSize:'0.75rem', color:'#eab308', fontWeight:600}}>{metrics.houstonOccupancyPercent}%</div>
+                    </div>
+                    <div className={styles.kpiBox}>
+                        <div className={styles.kpiLabel}>Rent / SqFt</div>
+                        <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonRentPerSqFt}</div>
+                    </div>
+                    <div className={styles.kpiBox}>
+                         <div className={styles.kpiLabel}>Reviews</div>
+                         <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonReviews}</div>
+                         <div style={{fontSize:'0.75rem', marginBottom:'2px'}}>4.6/5 ⭐⭐⭐⭐⭐</div>
+                         <a href={metrics.reviewLinks.houston} style={{fontSize:'0.7rem', color:'#eab308', textDecoration:'underline'}} target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-      {/* Card 7: Next Month Forecast (Full Width) */}
+      {/* BOTTOM: Next Month Forecast */}
       <div className={styles.forecastBox}>
           <h3>🚀 Next Month Forecast: Charlotte $24,000 | Houston $16,000</h3>
           {isEditing ? (
@@ -265,7 +253,7 @@ export default function KpiGrid({
             />
           ) : (
             <div className={styles.highlightText} style={{color: '#e2e8f0', fontSize: '1rem'}}>
-                {formatText("📢 Next month, we expect:\n\nCharlotte: We will complete all 180 self storage units - completing 2025 business plan.✅\n\nHouston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.\n\nWe expect revenue to be at $45,000-$46,000 next month.")}
+                {formatText(metrics.nextMonthForecast)}
             </div>
           )}
       </div>
