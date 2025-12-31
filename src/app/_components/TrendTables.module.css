@@ -1,84 +1,163 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 2rem;
-  padding: 0 1rem 2rem 1rem;
+  display: block; /* Remove grid to allow parent grid control */
+  width: 100%;
 }
 
 .tableWrapper {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.02),
+    0 4px 6px -4px rgba(0, 0, 0, 0.02),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tableWrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .tableTitle {
-  padding: 1rem 1.5rem;
+  padding: 10px 16px; /* Reduced from 16px 20px */
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #f8fafc;
-  background: rgba(15, 23, 42, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px; /* Reduced from 14px */
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(to right, #f8fafc, #ffffff);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tableTitle::before {
+  content: "";
+  width: 3px;
+  height: 14px;
+  background: #4169E1;
+  border-radius: 2px;
 }
 
 .scrollContainer {
-  overflow-x: auto;
+  overflow-x: hidden; /* Prevent slider */
   width: 100%;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
-  color: #cbd5e1;
-}
-
-.table th,
-.table td {
-  padding: 0.75rem 1rem;
-  text-align: right;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  white-space: nowrap;
+  font-size: 10px; /* Reduced from 13px */
+  color: #334155;
 }
 
 .table th {
-  background: rgba(15, 23, 42, 0.3);
-  font-weight: 600;
-  color: #94a3b8;
+  padding: 6px 4px; /* Ultra-tight horizontal padding */
+  text-align: right;
+  background: #f8fafc;
+  font-weight: 700;
+  color: #64748b;
+  font-size: 8px; /* Further reduced to 8px for headers */
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.table td {
+  padding: 6px 4px; /* Ultra-tight horizontal padding */
+  text-align: right;
+  border-bottom: 1px dotted rgba(15, 23, 42, 0.08);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .stickyCol {
   position: sticky;
   left: 0;
-  background: #1e293b;
+  background: #ffffff !important;
   text-align: left !important;
   z-index: 10;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  min-width: 160px;
+  border-right: 1px solid rgba(15, 23, 42, 0.04);
+  min-width: 90px; /* Minimized width */
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 9px; /* Reduced to 9px */
 }
 
 .metricLabel {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 12px;
 }
 
 .colorDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
   flex-shrink: 0;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(15, 23, 42, 0.04);
 }
 
 .table tr:hover td {
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8fafc;
 }
 
 .table tr:last-child td {
   border-bottom: none;
 }
+
+.table td:not(.stickyCol) {
+  color: #1e293b;
+  font-family: var(--font-mono);
+  font-size: 9px; /* Unified to 9px */
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.editInput {
+  width: 100%;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  text-align: right;
+  outline: none;
+}
+
+.editInput:focus {
+  border-color: #4169E1;
+  background: #1e293b;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.editInput::-webkit-outer-spin-button,
+.editInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.editInput[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+

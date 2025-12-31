@@ -22,7 +22,7 @@ export type PortfolioProperty = {
 export type KPIMetrics = {
   // Charlotte (Mt Holly) metrics
   charlotteRevenue: string;
-  charlotteOccupiedUnits: number;
+  charlotteOccupiedUnits: string;
   charlotteTotalUnits: number;
   charlotteOccupancyPercent: number;
   charlotteMoveIns: number;
@@ -34,7 +34,7 @@ export type KPIMetrics = {
   
   // Houston (Hamshire) metrics
   houstonRevenue: string;
-  houstonOccupiedUnits: number;
+  houstonOccupiedUnits: string;
   houstonTotalUnits: number;
   houstonOccupancyPercent: number;
   houstonMoveIns: number;

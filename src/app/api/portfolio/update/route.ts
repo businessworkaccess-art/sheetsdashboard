@@ -3,13 +3,13 @@ import { updateDashboardData } from "@/lib/sheets";
 
 export async function POST(req: NextRequest) {
   try {
-    const { portfolio, kpiMetrics } = await req.json();
+    const { portfolio, kpiMetrics, revenueTrend } = await req.json();
     
     if (!portfolio || !kpiMetrics) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
     }
 
-    await updateDashboardData(portfolio, kpiMetrics);
+    await updateDashboardData(portfolio, kpiMetrics, revenueTrend);
     
     return NextResponse.json({ success: true, message: "Sheet updated successfully" });
   } catch (error) {

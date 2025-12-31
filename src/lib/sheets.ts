@@ -83,20 +83,25 @@ export async function fetchDashboardData(
     spreadsheetId: SHEET_ID,
     range: `'2025 Hamshire'!C7`,
   });
+  const templateUnitsPromise = sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: `'Dashboard Template'!A15:B15`,
+  });
   const charlotteRentPromise = sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: `'2025 Mt Holly'!O18`,
+    range: `'2025 Mt Holly'!O17`,
   });
   const houstonRentPromise = sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range: `'2025 Hamshire'!O18`,
   });
 
-  const [mainRes, templateRes, mtHollyUnitsRes, hamshireUnitsRes, charlotteRentRes, houstonRentRes] = await Promise.all([
+  const [mainRes, templateRes, mtHollyUnitsRes, hamshireUnitsRes, templateUnitsRes, charlotteRentRes, houstonRentRes] = await Promise.all([
      mainPromise.catch(e => ({ data: { values: [] } })), 
      templatePromise.catch(e => ({ data: { values: [] } })),
      mtHollyUnitsPromise.catch(e => ({ data: { values: [] } })),
      hamshireUnitsPromise.catch(e => ({ data: { values: [] } })),
+     templateUnitsPromise.catch(e => ({ data: { values: [] } })),
      charlotteRentPromise.catch(e => ({ data: { values: [] } })),
      houstonRentPromise.catch(e => ({ data: { values: [] } }))
   ]);
@@ -134,14 +139,21 @@ export async function fetchDashboardData(
   const moveOutMtHollyRow = rows[32] ?? [];
 
   // Parse current month values
-  const charlotteOccupiedUnits = parseNumericValue(occupiedMtHollyRow[monthCol] as string);
-  const houstonOccupiedUnits = parseNumericValue(occupiedHamshireRow[monthCol] as string);
+  // Fetched directly from Dashboard Template!A15:B15
+  const templateUnitsRow = templateUnitsRes.data.values?.[0] ?? [];
+  const charlotteOccupiedString = String(templateUnitsRow[0] || "Charlotte 0/0");
+  const houstonOccupiedString = String(templateUnitsRow[1] || "Houston 0/0");
+  
+  // Parse numeric values for calculations (from monthly data)
+  const charlotteOccupiedNum = parseNumericValue(occupiedMtHollyRow[monthCol] as string);
+  const houstonOccupiedNum = parseNumericValue(occupiedHamshireRow[monthCol] as string);
+
   const charlotteOccupancyPercent = parsePercentage(occupancyMtHollyRow[monthCol] as string);
   const houstonOccupancyPercent = parsePercentage(occupancyHamshireRow[monthCol] as string);
 
   // Parse beginning of year values
-  const charlotteBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedMtHollyRow[janCol] as string) : charlotteOccupiedUnits;
-  const houstonBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedHamshireRow[janCol] as string) : houstonOccupiedUnits;
+  const charlotteBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedMtHollyRow[janCol] as string) : charlotteOccupiedNum;
+  const houstonBeginningUnits = janCol !== -1 ? parseNumericValue(occupiedHamshireRow[janCol] as string) : houstonOccupiedNum;
 
   // Move ins/outs
   const charlotteMoveIns = parseNumericValue(moveInMtHollyRow[monthCol] as string);
@@ -152,13 +164,16 @@ export async function fetchDashboardData(
   // --- Process Total Units (Source of Truth) ---
   // Mt Holly (Charlotte) C6, Hamshire (Houston) C7
   let charlotteTotalUnits = 305;
-  let houstonTotalUnits = 222;
+  let houstonTotalUnits = 201;
 
   const mhVal = mtHollyUnitsRes.data.values?.[0]?.[0];
   const hhVal = hamshireUnitsRes.data.values?.[0]?.[0];
   
-  if (mhVal) charlotteTotalUnits = parseNumericValue(mhVal);
-  if (hhVal) houstonTotalUnits = parseNumericValue(hhVal);
+  const parsedMh = parseNumericValue(mhVal);
+  const parsedHh = parseNumericValue(hhVal);
+
+  if (parsedMh > 0) charlotteTotalUnits = parsedMh;
+  if (parsedHh > 0) houstonTotalUnits = parsedHh;
   
   const fundTotalUnits = charlotteTotalUnits + houstonTotalUnits;
 
@@ -167,6 +182,12 @@ export async function fetchDashboardData(
   const charlotteHighlightsFromSheet = templateRows[15]?.[9];
   const houstonHighlightsFromSheet = templateRows[20]?.[9];
   const nextMonthForecastFromSheet = templateRows[10]?.[9];
+
+  // KPI Overrides from Template
+  const charlotteRevenueOverride = templateRows[13]?.[0]; // A14
+  const houstonRevenueOverride = templateRows[13]?.[1]; // B14
+  const charlotteReviewsFromSheet = templateRows[15]?.[5]; // F16
+  const houstonReviewsFromSheet = templateRows[20]?.[5]; // F21
 
   // Debug logging
   console.log('=== SHEET DATA DEBUG ===');
@@ -191,13 +212,10 @@ Charlotte: We will complete all 180 self storage units - completing 2025 busines
 Houston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.
 We expect revenue to be at $45,000-$46,000 next month.`;
 
-  console.log('=== FINAL VALUES ===');
-  console.log('nextMonthForecast:', nextMonthForecast);
-  console.log('fundHighlights:', fundHighlights);
-
   let charlotteCAC = "$104"; let charlotteLTV = "$1500";
   let houstonCAC = "$144"; let houstonLTV = "$1200";
-  let charlotteReviews = "126"; let houstonReviews = "41";
+  let charlotteReviews = charlotteReviewsFromSheet || "126"; 
+  let houstonReviews = houstonReviewsFromSheet || "41";
   const reviewLinks = { 
     charlotte: "https://share.google/AFA5yBKYd9RAevikR", 
     houston: "https://share.google/vyB97Y6kT75ipzE3S" 
@@ -212,9 +230,9 @@ We expect revenue to be at $45,000-$46,000 next month.`;
   const houstonRentPerSqFt = houstonRentPerSqFtFromSheet !== "$0" ? houstonRentPerSqFtFromSheet : parseMoney(rentPerSqFtHamshireRow[monthCol] as string);
 
   // Derived metrics
-  const fundTotalOccupiedUnits = charlotteOccupiedUnits + houstonOccupiedUnits;
-  const charlotteOccupancyGrowth = charlotteBeginningUnits > 0 ? ((charlotteOccupiedUnits - charlotteBeginningUnits) / charlotteBeginningUnits) * 100 : 0;
-  const houstonOccupancyGrowth = houstonBeginningUnits > 0 ? ((houstonOccupiedUnits - houstonBeginningUnits) / houstonBeginningUnits) * 100 : 0;
+  const fundTotalOccupiedUnits = charlotteOccupiedNum + houstonOccupiedNum;
+  const charlotteOccupancyGrowth = charlotteBeginningUnits > 0 ? ((charlotteOccupiedNum - charlotteBeginningUnits) / charlotteBeginningUnits) * 100 : 0;
+  const houstonOccupancyGrowth = houstonBeginningUnits > 0 ? ((houstonOccupiedNum - houstonBeginningUnits) / houstonBeginningUnits) * 100 : 0;
   const fundBeginningUnits = charlotteBeginningUnits + houstonBeginningUnits;
   const fundOccupancyGrowth = fundBeginningUnits > 0 ? ((fundTotalOccupiedUnits - fundBeginningUnits) / fundBeginningUnits) * 100 : 0;
   const fundOccupancyPercent = fundTotalUnits > 0 ? (fundTotalOccupiedUnits / fundTotalUnits) * 100 : 0;
@@ -241,8 +259,8 @@ We expect revenue to be at $45,000-$46,000 next month.`;
   }
 
   const kpiMetrics: KPIMetrics = {
-    charlotteRevenue: parseMoney(revenueMtHollyRow[monthCol] as string),
-    charlotteOccupiedUnits,
+    charlotteRevenue: charlotteRevenueOverride || parseMoney(revenueMtHollyRow[monthCol] as string),
+    charlotteOccupiedUnits: charlotteOccupiedString,
     charlotteTotalUnits,
     charlotteOccupancyPercent,
     charlotteMoveIns,
@@ -251,8 +269,8 @@ We expect revenue to be at $45,000-$46,000 next month.`;
     charlotteCAC,
     charlotteLTV,
     charlotteReviews,
-    houstonRevenue: parseMoney(revenueHamshireRow[monthCol] as string),
-    houstonOccupiedUnits,
+    houstonRevenue: houstonRevenueOverride || parseMoney(revenueHamshireRow[monthCol] as string),
+    houstonOccupiedUnits: houstonOccupiedString,
     houstonTotalUnits,
     houstonOccupancyPercent,
     houstonMoveIns,
@@ -396,7 +414,11 @@ export async function fetchDashboardSummary(monthShort: string, year: string): P
   const { summary } = await fetchDashboardData(monthShort, year);
   return summary;
 }
-export async function updateDashboardData(portfolio: PortfolioProperty[], metrics: KPIMetrics): Promise<void> {
+export async function updateDashboardData(
+  portfolio: PortfolioProperty[], 
+  metrics: KPIMetrics,
+  revenueTrend?: RevenueTrendData[]
+): Promise<void> {
   const auth = getAuth();
   const sheets = google.sheets({ version: "v4", auth });
 
@@ -423,12 +445,20 @@ export async function updateDashboardData(portfolio: PortfolioProperty[], metric
     requestBody: { values: portfolioValues }
   });
 
-  // 2. Update Narratives (J11, J12, J16, J21)
+  // 2. Update Narratives and KPIs (J11, J12, J16, J21, A15, B15, etc.)
   const narrativeUpdates = [
     { range: `'Dashboard Template'!J11`, values: [[metrics.nextMonthForecast]] },
     { range: `'Dashboard Template'!J12`, values: [[metrics.fundHighlights]] },
     { range: `'Dashboard Template'!J16`, values: [[metrics.charlotteHighlights]] },
-    { range: `'Dashboard Template'!J21`, values: [[metrics.houstonHighlights]] }
+    { range: `'Dashboard Template'!J21`, values: [[metrics.houstonHighlights]] },
+    // Unit/Total Overrides
+    { range: `'Dashboard Template'!A15`, values: [[metrics.charlotteOccupiedUnits]] },
+    { range: `'Dashboard Template'!B15`, values: [[metrics.houstonOccupiedUnits]] },
+    // Manual KPI Overrides (Optional use of Template Sheet for persistence)
+    { range: `'Dashboard Template'!A14`, values: [[metrics.charlotteRevenue]] },
+    { range: `'Dashboard Template'!B14`, values: [[metrics.houstonRevenue]] },
+    { range: `'Dashboard Template'!F16`, values: [[metrics.charlotteReviews]] },
+    { range: `'Dashboard Template'!F21`, values: [[metrics.houstonReviews]] }
   ];
 
   for (const update of narrativeUpdates) {
@@ -439,4 +469,66 @@ export async function updateDashboardData(portfolio: PortfolioProperty[], metric
       requestBody: { values: update.values }
     });
   }
+
+  // 3. Update Rent Per Sq Ft (O18 in property sheets)
+  const rentUpdates = [
+    { range: `'2025 Mt Holly'!O18`, values: [[metrics.charlotteRentPerSqFt]] },
+    { range: `'2025 Hamshire'!O18`, values: [[metrics.houstonRentPerSqFt]] }
+  ];
+
+  for (const update of rentUpdates) {
+      await sheets.spreadsheets.values.update({
+          spreadsheetId: SHEET_ID,
+          range: update.range,
+          valueInputOption: "USER_ENTERED",
+          requestBody: { values: update.values }
+      });
+  }
+
+  // 4. Update Revenue Trend if provided
+  if (revenueTrend && revenueTrend.length > 0) {
+    const chartSheetName = "RETHINK CHART - 24MONTHS";
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `'${chartSheetName}'!A1:Z30`,
+    });
+    const rows = res.data.values ?? [];
+    const headerRow = rows[1] ?? []; // Row 2
+
+    // Prepare batch updates
+    const updates = [];
+
+    for (const d of revenueTrend) {
+      const colIndex = headerRow.findIndex(cell => String(cell).trim() === d.month.trim());
+      if (colIndex === -1) continue;
+
+      const colLetter = String.fromCharCode(65 + colIndex);
+
+      // Block 1: Fund Totals
+      updates.push({ range: `'${chartSheetName}'!${colLetter}3`, values: [[d.charlotteRevenue]] });
+      updates.push({ range: `'${chartSheetName}'!${colLetter}4`, values: [[d.houstonRevenue]] });
+      updates.push({ range: `'${chartSheetName}'!${colLetter}5`, values: [[d.totalRevenue]] });
+      updates.push({ range: `'${chartSheetName}'!${colLetter}6`, values: [[d.totalForecast]] });
+
+      // Block 2: Charlotte
+      updates.push({ range: `'${chartSheetName}'!${colLetter}10`, values: [[d.charlotteRevenue]] }); // Sync with Block 1
+      updates.push({ range: `'${chartSheetName}'!${colLetter}11`, values: [[d.charlotteForecast]] });
+
+      // Block 3: Houston
+      updates.push({ range: `'${chartSheetName}'!${colLetter}16`, values: [[d.houstonRevenue]] }); // Sync with Block 1
+      updates.push({ range: `'${chartSheetName}'!${colLetter}17`, values: [[d.houstonForecast]] });
+    }
+
+    // Execute in chunks to avoid rate limits if necessary, but here we can use batchUpdate
+    if (updates.length > 0) {
+      await sheets.spreadsheets.values.batchUpdate({
+        spreadsheetId: SHEET_ID,
+        requestBody: {
+          valueInputOption: "USER_ENTERED",
+          data: updates.map(u => ({ range: u.range, values: u.values }))
+        }
+      });
+    }
+  }
 }
+

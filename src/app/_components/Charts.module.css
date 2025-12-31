@@ -1,47 +1,47 @@
 
 .chartsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem; /* Increased gap for better separation */
-  margin-top: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
   width: 100%;
+}
+
+.chartCard:first-child {
+  grid-column: 1 / -1;
 }
 
 .chartCard {
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
-/* Make the 3rd chart (Houston) span (full width) */
-.chartCard:nth-child(3) {
-  grid-column: 1 / -1;
-}
 
 .chartHeader {
-  padding: 1rem;
+  padding: 8px 12px; /* Reduced from 1rem */
   border-bottom: 1px solid #f1f5f9;
   background: #fff;
 }
 
 .chartTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 14px; /* Reduced from 1.125rem (18px) */
+  font-weight: 700;
   color: #0f172a;
   margin: 0;
   text-align: center;
 }
 
 .chartBody {
-  background: #000000; /* Black background as per image */
-  padding: 1rem;
+  background: #000000;
+  padding: 8px; /* Reduced from 1rem */
   flex: 1;
-  min-height: 300px;
+  min-height: 240px; /* Reduced from 300px */
 }
 
 @media (max-width: 1200px) {

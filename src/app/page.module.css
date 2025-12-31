@@ -153,85 +153,70 @@
 
 .button,
 .buttonPrimary {
-  padding: 0 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  font-size: 12px;
-  font-weight: 600;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #1e293b;
   height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
-  white-space: nowrap; /* Prevent wrapping */
-  min-width: max-content; /* Ensure width fits content */
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
 }
 
-/* ... existing hover styles ... */
 .button:hover {
-  border-color: var(--color-slate-300);
-  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
-  color: var(--text-primary);
-}
-
-.button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 .buttonPrimary {
-  background: var(--gradient-accent);
-  color: var(--color-primary);
-  border: none;
-  font-weight: 700;
-  box-shadow: var(--shadow-md), 0 2px 8px rgba(201, 169, 98, 0.3);
+  background: #4169E1;
+  color: #ffffff;
+  border: 1px solid #3457C9;
+  box-shadow: 0 4px 12px rgba(65, 105, 225, 0.2);
 }
 
 .buttonPrimary:hover {
-  box-shadow: var(--shadow-lg), 0 4px 16px rgba(201, 169, 98, 0.4);
-  transform: translateY(-2px);
-}
-
-.buttonPrimary:active {
-  transform: translateY(0);
+  background: #3457C9;
+  box-shadow: 0 8px 16px rgba(65, 105, 225, 0.3);
+  transform: translateY(-1px);
 }
 
 .buttonEdit,
 .buttonSave {
   padding: 0 20px;
-  border-radius: var(--radius-md);
-  font-size: 12px;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-md);
-  margin-left: 10px;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.1);
   border: none;
-  white-space: nowrap; /* Prevent wrapping */
-  min-width: max-content;
 }
 
 .buttonEdit {
-  background: var(--color-slate-800);
-  color: white;
+  background: #0f172a;
+  color: #ffffff;
 }
 
 .buttonEdit:hover {
-  background: var(--color-slate-900);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px rgba(15, 23, 42, 0.2);
 }
 
 .buttonSave {
@@ -243,7 +228,7 @@
 .buttonSave:hover {
   background: #059669;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
 @keyframes pulse-green {
@@ -268,13 +253,13 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
-  padding: 20px; /* Reduced padding */
+  padding: 12px; /* Reduced from 20px */
   box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08),
     0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(226, 232, 240, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Reduced gap */
+  gap: 12px; /* Reduced from 20px */
   animation: fadeIn 0.6s ease-out 0.1s backwards;
   width: 100%;
 }
@@ -283,7 +268,7 @@
 .card {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
-  padding: 16px 20px;
+  padding: 12px 16px; /* Reduced from 16px 20px */
   background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -666,9 +651,9 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(10, 22, 40, 0.65) 0%,
-    rgba(15, 36, 68, 0.55) 50%,
-    rgba(26, 50, 85, 0.50) 100%
+    rgba(10, 22, 40, 0.85) 0%,
+    rgba(15, 36, 68, 0.75) 50%,
+    rgba(26, 50, 85, 0.70) 100%
   );
 }
 
@@ -717,6 +702,7 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .fundSubtitle {
@@ -785,11 +771,13 @@
 }
 
 .businessPlanProperty {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .propertyName {
@@ -823,12 +811,13 @@
 
 .propertyPhases {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1.6;
 }
 
-.propertyPhases div {
+.propertyPhases p {
   margin-bottom: 4px;
+  text-align: justify;
 }
 
 .propertyPhases strong {
@@ -1094,3 +1083,94 @@
     break-inside: avoid;
   }
 }
+
+/* ===== EXPORT MODE OVERRIDES ===== */
+/* These styles are applied only during PDF/Image export/capture via html2canvas */
+
+/* Main Container Override */
+.exportMode {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Hero Section Specifics: Dark background, White Text */
+.exportMode .businessPlanProperty,
+.exportMode .logoWrapper {
+  background: rgba(15, 23, 42, 1) !important; /* Solid dark */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.exportMode .heroOverlay {
+  background: rgba(10, 22, 40, 0.9) !important; /* More opaque dark overlay */
+}
+
+.exportMode .propertyName,
+.exportMode .propertyDetails,
+.exportMode .propertyFinancing,
+.exportMode .propertyPhases,
+.exportMode .fundTitle,
+.exportMode .fundSubtitle {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* General Text Contrast Enhancement for Light Sections */
+.exportMode h1, 
+.exportMode h2, 
+.exportMode .bigNumber {
+  color: #000000 !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #000000 !important; /* Override gradients on text */
+}
+
+/* Fix chart tooltips or overlays if captured */
+.exportMode .loading {
+  display: none !important;
+}
+
+/* Force High Contrast for Tables and Cards */
+.exportMode .card,
+.exportMode .kpiCard,
+.exportMode .kpiCardWide {
+  background: #ffffff !important;
+  box-shadow: none !important; /* Remove shadows that might look like blur */
+  border: 1px solid #cbd5e1 !important; /* Crisp border */
+}
+
+/* Force Table Text Black */
+.exportMode .table th {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: #f1f5f9 !important; /* solid light grey header background */
+}
+
+.exportMode .table td {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+/* Force all other text to be darker */
+.exportMode .bodyText,
+.exportMode p,
+.exportMode span, 
+.exportMode div {
+  text-shadow: none !important;
+}
+
+.exportMode .bodyText {
+  color: #000000 !important;
+}
+
+/* Darken tertiary text just enough to be legible but distinct */
+.exportMode .kpiSubtext,
+.exportMode .chartSubtext,
+.exportMode .controls label {
+  color: #333333 !important;
+}
+
+

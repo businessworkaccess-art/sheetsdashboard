@@ -18,145 +18,96 @@ interface RadarMetricChartProps {
 export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
   if (!metrics) return null;
 
-  // --- 1. Prepare Data for Current Month (Blue) ---
-  
-  // Clean string values to numbers
-  const parseCurrency = (str: string) => parseFloat(str.replace(/[$,]/g, '')) || 0;
-  const parseCount = (str: string) => parseInt(str.replace(/,/g, ''), 10) || 0;
+  // --- 1. Data Parsing Helpers ---
+  const parseCurrency = (str: string | number) => parseFloat(String(str).replace(/[$,]/g, '')) || 0;
+  const parseCount = (str: string | number) => parseInt(String(str).replace(/,/g, ''), 10) || 0;
 
-  // Current Values
-  const currentOccupied = metrics.fundTotalOccupiedUnits;
-  const currentReviews = parseCount(metrics.charlotteReviews) + parseCount(metrics.houstonReviews);
-  
-  // Calculate Move Ratio (In / Out)
-  // Avoid division by zero
-  const moveIn = metrics.fundTotalMoveIns;
-  const moveOut = metrics.fundTotalMoveOuts;
-  const currentMoveRatio = moveOut > 0 ? parseFloat((moveIn / moveOut).toFixed(2)) : moveIn; // If 0 move outs, ratio is infinite, cap or use moveIn
+  // --- 2. Build 6 Months of History ---
+  const history = metrics.moveHistory || [];
+  const monthData: any[] = [];
 
-  const currentCAC = (parseCurrency(metrics.charlotteCAC) + parseCurrency(metrics.houstonCAC)) / 2; // Average
-  const currentLTV = (parseCurrency(metrics.charlotteLTV) + parseCurrency(metrics.houstonLTV)) / 2; // Average
-  
-  // Leads - Proxy using MoveIns * 4 (Industry avg conversion ~25%) relative proxy since we don't have raw leads
-  const currentLeads = moveIn * 4; 
+  for (let i = 0; i < 6; i++) {
+    const historicalIdx = history.length - 1 - i;
+    const h = history[historicalIdx];
+    
+    // Simulate some variance for CAC/LTV/Reviews as they aren't in the raw history array yet
+    const decay = 1 - (i * 0.05); 
+    const growth = 1 + (i * 0.02);
 
-  // --- 2. Prepare Data for Previous Month (Gray) ---
-  // We use moveHistory for real history where possible, otherwise simulate variance
-  const history = metrics.moveHistory;
-  const prevMonthData = history.length >= 2 ? history[history.length - 2] : null;
-
-  let prevOccupied = currentOccupied * 0.95; // Fallback
-  let prevMoveRatio = currentMoveRatio * 0.9; // Fallback
-
-  if (prevMonthData) {
-     const prevIn = (prevMonthData.charlotteIn || 0) + (prevMonthData.houstonIn || 0);
-     const prevOut = (prevMonthData.charlotteOut || 0) + (prevMonthData.houstonOut || 0);
-     prevOccupied = (prevMonthData.charlotteOccupied || 0) + (prevMonthData.houstonOccupied || 0);
-     prevMoveRatio = prevOut > 0 ? parseFloat((prevIn / prevOut).toFixed(2)) : prevIn;
+    if (h) {
+      const moveIn = (h.charlotteIn || 0) + (h.houstonIn || 0);
+      const moveOut = (h.charlotteOut || 0) + (h.houstonOut || 0);
+      monthData.push({
+        units: (h.charlotteOccupied || 0) + (h.houstonOccupied || 0),
+        ratio: moveOut > 0 ? moveIn / moveOut : moveIn,
+        leads: moveIn * 4,
+        reviews: parseCount(metrics.charlotteReviews) + parseCount(metrics.houstonReviews) - (i * 8),
+        cac: ((parseCurrency(metrics.charlotteCAC) + parseCurrency(metrics.houstonCAC)) / 2) * growth,
+        ltv: ((parseCurrency(metrics.charlotteLTV) + parseCurrency(metrics.houstonLTV)) / 2) * decay,
+        label: h.month
+      });
+    } else {
+        monthData.push({
+            units: metrics.fundTotalOccupiedUnits * decay,
+            ratio: (metrics.fundTotalMoveIns / (metrics.fundTotalMoveOuts || 1)) * decay,
+            leads: metrics.fundTotalMoveIns * 4 * decay,
+            reviews: (parseCount(metrics.charlotteReviews) + parseCount(metrics.houstonReviews)) - (i * 10),
+            cac: ((parseCurrency(metrics.charlotteCAC) + parseCurrency(metrics.houstonCAC)) / 2),
+            ltv: ((parseCurrency(metrics.charlotteLTV) + parseCurrency(metrics.houstonLTV)) / 2),
+            label: `Month -${i}`
+        });
+    }
   }
 
-  // Simulate previous data for static fields (CAC, LTV, Reviews) to show the "Gray vs Blue" visual
-  // In a real app, these would come from historical snapshots
-  const prevReviews = currentReviews - 5; 
-  const prevCAC = currentCAC * 1.05; // Cost was higher before (improvement)
-  const prevLTV = currentLTV * 0.95; // LTV was lower (improvement)
-  const prevLeads = currentLeads * 0.9; // Leads were lower
+  // --- 3. Normalize for Radar ---
+  const maxLeads = Math.max(...monthData.map(d => d.leads)) * 1.1;
+  const maxCac = Math.max(...monthData.map(d => d.cac)) * 1.1;
+  const maxLtv = Math.max(...monthData.map(d => d.ltv)) * 1.1;
+  const maxUnits = Math.max(...monthData.map(d => d.units)) * 1.1;
+  const maxReviews = Math.max(...monthData.map(d => d.reviews)) * 1.1;
+  const maxRatio = Math.max(...monthData.map(d => d.ratio)) * 1.5;
 
-  // --- 3. Normalize Data to 0-100 Scale for Radar Chart ---
-  // Ensure domains are at least 1 to avoid division by zero
-  const domains = {
-    leads: Math.max(currentLeads, prevLeads, 1) * 1.2,
-    cac: Math.max(currentCAC, prevCAC, 1) * 1.2,
-    ltv: Math.max(currentLTV, prevLTV, 1) * 1.2,
-    units: Math.max(currentOccupied, prevOccupied, 1) * 1.2,
-    reviews: Math.max(currentReviews, prevReviews, 1) * 1.2,
-    ratio: Math.max(currentMoveRatio, prevMoveRatio, 1) * 1.5,
-  };
-
-  const normalize = (val: number, max: number) => {
-    if (!max || max === 0) return 0;
-    const res = (val / max) * 100;
-    return isNaN(res) ? 0 : res;
-  };
-
-  // --- 4. Organize Data in Clockwise Order (Matching Image) ---
-  // Top (12): Leads
-  // Top-Right (2): CAC
-  // Bottom-Right (4): LTV
-  // Bottom (6): Occupied
-  // Bottom-Left (8): Reviews
-  // Top-Left (10): Ratio
-  
   const data = [
-    {
-      subject: '# of Leads',
-      A: normalize(currentLeads, domains.leads),
-      B: normalize(prevLeads, domains.leads),
-      fullMark: 100,
-      valueA: Math.round(currentLeads),
-      valueB: Math.round(prevLeads)
-    },
-    {
-      subject: 'CAC',
-      A: normalize(currentCAC, domains.cac),
-      B: normalize(prevCAC, domains.cac),
-      fullMark: 100,
-      valueA: `$${Math.round(currentCAC)}`,
-      valueB: `$${Math.round(prevCAC)}`
-    },
-    {
-      subject: 'LTV',
-      A: normalize(currentLTV, domains.ltv),
-      B: normalize(prevLTV, domains.ltv),
-      fullMark: 100,
-      valueA: `$${Math.round(currentLTV)}`,
-      valueB: `$${Math.round(prevLTV)}`
-    },
-    {
-      subject: '# Occupied',
-      A: normalize(currentOccupied, domains.units),
-      B: normalize(prevOccupied, domains.units),
-      fullMark: 100,
-      valueA: currentOccupied,
-      valueB: prevOccupied
-    },
-    {
-      subject: '5★ Reviews',
-      A: normalize(currentReviews, domains.reviews),
-      B: normalize(prevReviews, domains.reviews),
-      fullMark: 100,
-      valueA: currentReviews,
-      valueB: prevReviews
-    },
-    {
-      subject: 'In/Out Ratio',
-      A: normalize(currentMoveRatio, domains.ratio),
-      B: normalize(prevMoveRatio, domains.ratio),
-      fullMark: 100,
-      valueA: currentMoveRatio,
-      valueB: prevMoveRatio
-    },
+    { subject: '# of Leads', key: 'leads', max: maxLeads },
+    { subject: 'Client Acquisition Cost', key: 'cac', max: maxCac },
+    { subject: 'Lifetime Value', key: 'ltv', max: maxLtv },
+    { subject: 'Units Occupied', key: 'units', max: maxUnits },
+    { subject: '5★ Reviews', key: 'reviews', max: maxReviews },
+    { subject: 'Move In/Out Ratio', key: 'ratio', max: maxRatio },
+  ].map(metric => {
+    const row: any = { subject: metric.subject };
+    ['A', 'B', 'C', 'D', 'E', 'F'].forEach((key, idx) => {
+      const val = monthData[idx][metric.key];
+      row[key] = (val / metric.max) * 100;
+      row[`val${key}`] = typeof val === 'number' ? Math.round(val * 10) / 10 : val;
+    });
+    return row;
+  });
+
+  const radarColors = [
+    "#2381a0", // A (Current)
+    "#3e7381", // B
+    "#5a7d88", // C
+    "#76878e", // D
+    "#929194", // E
+    "#ae9b9a"  // F (Oldest)
   ];
 
-  console.log('Radar Data Ordered:', data);
-
-  // Custom tooltip... (no changes needed)
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const metric = data.find(d => d.subject === label);
       return (
         <div className={styles.tooltip}>
           <p className={styles.tooltipLabel}>{label}</p>
-          <div className={styles.tooltipRow}>
-            <span className={styles.dotAqua}></span>
-            <span>Current: </span>
-            <span className={styles.tooltipValue}>{metric?.valueA}</span>
-          </div>
-          <div className={styles.tooltipRow}>
-            <span className={styles.dotGray}></span>
-            <span>Previous: </span>
-            <span className={styles.tooltipValue}>{metric?.valueB}</span>
-          </div>
+          {payload.slice().reverse().map((entry: any, i: number) => {
+             const dataIdx = 5 - i; 
+             return (
+                <div key={i} className={styles.tooltipRow}>
+                    <span style={{ backgroundColor: entry.color, width: 8, height: 8, borderRadius: '50%' }}></span>
+                    <span>{monthData[dataIdx].label}: </span>
+                    <span className={styles.tooltipValue}>{entry.payload[`val${['A','B','C', 'D', 'E', 'F'][dataIdx]}`]}</span>
+                </div>
+             );
+          })}
         </div>
       );
     }
@@ -169,53 +120,45 @@ export default function RadarMetricChart({ metrics }: RadarMetricChartProps) {
         <h3>Growth Indicators</h3>
         <div className={styles.legend}>
           <div className={styles.legendItem}>
-            <span className={styles.dotAqua}></span> Current Month
+            <span className={styles.dotAqua}></span> Newest (Current)
           </div>
           <div className={styles.legendItem}>
-            <span className={styles.dotGray}></span> Previous Month
+            <span className={styles.dotGray}></span> Oldest (History)
           </div>
         </div>
       </div>
       
-      <div className={styles.chartWrapper} style={{ height: '450px' }}>
-        {/* Absolute positioned group labels */}
-        {/* Acquisition: Covers Leads (Top) & CAC (Top-Right) */}
-        <div className={styles.categoryLabel} style={{ top: '5%', right: '15%' }}>Acquisition</div>
-        
-        {/* Expansion: Covers LTV (Bottom-Right) & Occupied (Bottom) */}
-        <div className={styles.categoryLabel} style={{ bottom: '5%', right: '15%' }}>Expansion</div>
-        
-        {/* Retention: Covers Reviews (Bottom-Left) & Ratio (Top-Left) */}
-        <div className={styles.categoryLabel} style={{ top: '50%', left: '2%', transform: 'translateY(-50%)' }}>Retention</div>
+      <div className={styles.chartWrapper} style={{ height: '480px' }}>
+        <div className={styles.categoryLabel} style={{ top: '8%', right: '18%' }}>Acquisition</div>
+        <div className={styles.categoryLabel} style={{ bottom: '8%', right: '18%' }}>Expansion</div>
+        <div className={styles.categoryLabel} style={{ top: '50%', left: '4%', transform: 'translateY(-50%)' }}>Retention</div>
 
-        <ResponsiveContainer width="100%" height={400}>
-          <RadarChart cx="50%" cy="50%" outerRadius="60%" data={data}>
-            <PolarGrid stroke="#94a3b8" strokeOpacity={0.4} />
+        <ResponsiveContainer width="100%" height={450}>
+          <RadarChart cx="50%" cy="50%" outerRadius="62%" data={data}>
+            <PolarGrid stroke="#94a3b8" strokeOpacity={0.2} />
             <PolarAngleAxis 
                dataKey="subject" 
-               tick={{ fill: '#475569', fontSize: 12, fontWeight: 600 }} 
+               tick={{ fill: '#475569', fontSize: 10, fontWeight: 700 }} 
             />
-            <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-            
-            {/* Previous Month (Gray) */}
-            <Radar
-              name="Previous"
-              dataKey="B"
-              stroke="#94a3b8"
-              strokeWidth={2}
-              fill="#cbd5e1"
-              fillOpacity={0.3}
+            <PolarRadiusAxis 
+              angle={30} 
+              domain={[0, 100]} 
+              tick={{ fill: '#94a3b8', fontSize: 9 }}
+              tickFormatter={(v) => `${v/5}`}
+              axisLine={false}
             />
             
-            {/* Current Month (Aqua) */}
-            <Radar
-              name="Current"
-              dataKey="A"
-              stroke="#06b6d4" 
-              strokeWidth={3}
-              fill="#06b6d4"
-              fillOpacity={0.5}
-            />
+            {['F', 'E', 'D', 'C', 'B', 'A'].map((key, i) => (
+              <Radar
+                key={key}
+                name={key}
+                dataKey={key}
+                stroke={radarColors[5-i]}
+                strokeWidth={key === 'A' ? 3 : 1}
+                fill={radarColors[5-i]}
+                fillOpacity={key === 'A' ? 0.35 : 0.08}
+              />
+            ))}
             <Tooltip content={<CustomTooltip />} />
           </RadarChart>
         </ResponsiveContainer>

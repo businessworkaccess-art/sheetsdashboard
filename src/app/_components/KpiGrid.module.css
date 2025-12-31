@@ -1,9 +1,9 @@
 .gridContainer {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px; /* Reduced from 24px */
   width: 100%;
-  margin-top: 24px;
+  margin-top: 16px; /* Reduced from 24px */
 }
 
 .headerSection {
@@ -22,44 +22,44 @@
 .propertyColumn {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px; /* Reduced from 20px */
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px; /* Reduced from 20px */
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .propertyHeader {
-  font-size: 1.1rem;
+  font-size: 14px; /* Reduced from 1.1rem */
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding-bottom: 12px;
+  padding-bottom: 8px; /* Reduced from 12px */
   border-bottom: 2px solid;
-  margin-bottom: 8px;
+  margin-bottom: 4px; /* Reduced from 8px */
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .charlotteHeader {
-  color: #3b82f6;
-  border-color: #3b82f6;
+  color: #3a8dde;
+  border-color: #3a8dde;
 }
 
 .houstonHeader {
-  color: #eab308; /* Yellow-500 */
-  border-color: #eab308;
+  color: #ffc557; 
+  border-color: #ffc557;
 }
 
 .chartContainer {
-  height: 180px; 
+  height: 140px; /* Reduced from 180px */
   width: 100%;
-  margin: 10px 0;
+  margin: 4px 0; /* Reduced from 10px */
   background: #f8fafc;
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px; /* Reduced from 10px */
   border: 1px solid #f1f5f9;
 }
 
@@ -72,7 +72,7 @@
 .kpiBox {
   background: #f8fafc;
   border-radius: 8px;
-  padding: 12px;
+  padding: 8px 10px; /* Reduced from 12px */
   border: 1px solid #f1f5f9;
   text-align: center;
 }
@@ -95,13 +95,13 @@
 .forecastBox {
    background: #0f172a; 
    color: white;
-   padding: 24px;
+   padding: 16px; /* Reduced from 24px */
    border-radius: 12px;
    grid-column: 1 / -1;
 }
 
 .forecastBox h3 {
-  color: #4169E1;
+  color: #2381a0;
   margin: 0 0 12px 0;
   font-size: 1.1rem;
   display: flex;

@@ -1,0 +1,15 @@
+Starting debug...
+Fetching Dashboard Template A10:C20...
+Row Index | [A] | [B] | [C]
+10 |  |  | 
+11 | Client Acquitision Cost/ Life Time Value | (this can be a small box) | 
+12 | Charlotte $104 | Houston $144 | 
+13 |  |  | 
+14 | Units / Total |  | 
+15 | Charlotte 221/305 | Houston 144/201 | 
+16 |  |  | 
+17 | Sheet: MT Holly
+Ref: C6 | Sheet: 2025 Hamshire
+C7 | 
+18 |  |  | 
+19 | bar chart since inception comparing both, 1 in blue, other in yellow |  | 

@@ -8,8 +8,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Legend
+  ResponsiveContainer
 } from "recharts";
 
 export default function KpiGrid({ 
@@ -35,7 +34,6 @@ export default function KpiGrid({
     handleUpdate("majorNews", newNews);
   };
 
-  // Helper function to format text with proper line breaks
   const formatText = (text: string) => {
     if (!text) return null;
     return text.split('\n').map((line, index) => {
@@ -74,6 +72,21 @@ export default function KpiGrid({
     return null;
   };
 
+  const cleanUnits = (unitStr: string, total: number) => {
+    if (!unitStr) return `0/${total}`;
+    // Strip property names and handle redundant total display
+    let clean = unitStr.replace(/Charlotte|Houston/gi, '').trim();
+    if (!clean.includes('/')) {
+        return `${clean}/${total}`;
+    }
+    // If it shows "221/305/305", clean it to "221/305"
+    const parts = clean.split('/');
+    if (parts.length > 2) {
+        return `${parts[0].trim()}/${parts[1].trim()}`;
+    }
+    return clean;
+  };
+
   return (
     <div className={styles.gridContainer}>
         {/* TOP SECTION: Fund Highlights & News */}
@@ -90,10 +103,7 @@ export default function KpiGrid({
                   />
                 ) : (
                   <div className={styles.highlightText}>
-                    {formatText(metrics.fundHighlights || `📢 Next month, we expect:
-Charlotte: We will complete all 180 self storage units - completing 2025 business plan.✅
-Houston: September, we completed our 2025 construction business plan✅. Now increasing rates and we will focus on marketing our non-climate controlled inventory.
-We expect revenue to be at $45,000-$46,000 next month.`)}
+                    {formatText(metrics.fundHighlights)}
                   </div>
                 )}
             </div>
@@ -140,7 +150,7 @@ We expect revenue to be at $45,000-$46,000 next month.`)}
                     </div>
                 )}
 
-                {/* 2. Chart (Move In / Move Out) - Blue */}
+                {/* 2. Performance Chart - Brand Colors */}
                 <div className={styles.chartContainer}>
                     <div style={{fontSize:'0.7rem', color:'#64748b', marginBottom:'4px', textAlign:'center', fontWeight:600}}>MOVE IN (Bar) vs MOVE OUT (Line)</div>
                     <ResponsiveContainer width="100%" height="100%">
@@ -149,34 +159,69 @@ We expect revenue to be at $45,000-$46,000 next month.`)}
                         <XAxis dataKey="month" hide />
                         <YAxis hide />
                         <Tooltip content={<ChartTooltip />} />
-                        <Bar dataKey="charlotteIn" name="Move In" fill="#3b82f6" barSize={20} radius={[4, 4, 0, 0]} />
-                        <Line type="monotone" dataKey="charlotteOut" name="Move Out" stroke="#2563eb" strokeWidth={3} dot={{r:3}} />
+                        <Bar dataKey="charlotteIn" name="Move In" fill="#3a8dde" barSize={20} radius={[4, 4, 0, 0]} />
+                        <Line type="monotone" dataKey="charlotteOut" name="Move Out" stroke="#2381a0" strokeWidth={3} dot={{r:3}} />
                       </ComposedChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* 3. KPIs */}
+                {/* 3. Metrics Row */}
                 <div className={styles.kpiRow}>
                     <div className={styles.kpiBox}>
                         <div className={styles.kpiLabel}>Revenue</div>
-                        <div className={styles.kpiValue} style={{color:'#3b82f6'}}>{metrics.charlotteRevenue}</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.charlotteRevenue} 
+                                onChange={(e) => handleUpdate("charlotteRevenue", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center', color: '#3a8dde', fontWeight: 700 }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{color:'#3a8dde'}}>{metrics.charlotteRevenue}</div>
+                        )}
                     </div>
                      <div className={styles.kpiBox}>
-                        <div className={styles.kpiLabel}>Occupancy</div>
-                        <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
-                           {metrics.charlotteOccupiedUnits}<span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:400}}>/{metrics.charlotteTotalUnits}</span>
-                        </div>
-                        <div style={{fontSize:'0.75rem', color:'#3b82f6', fontWeight:600}}>{metrics.charlotteOccupancyPercent}%</div>
+                        <div className={styles.kpiLabel}>Units / Total</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.charlotteOccupiedUnits} 
+                                onChange={(e) => handleUpdate("charlotteOccupiedUnits", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center', fontSize: '0.8rem' }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
+                                {cleanUnits(metrics.charlotteOccupiedUnits, metrics.charlotteTotalUnits)}
+                            </div>
+                        )}
                     </div>
                     <div className={styles.kpiBox}>
                         <div className={styles.kpiLabel}>Rent / SqFt</div>
-                        <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteRentPerSqFt}</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.charlotteRentPerSqFt} 
+                                onChange={(e) => handleUpdate("charlotteRentPerSqFt", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center' }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteRentPerSqFt}</div>
+                        )}
                     </div>
                     <div className={styles.kpiBox}>
                          <div className={styles.kpiLabel}>Reviews</div>
-                         <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteReviews}</div>
+                         {isEditing ? (
+                            <input 
+                                value={metrics.charlotteReviews} 
+                                onChange={(e) => handleUpdate("charlotteReviews", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center' }}
+                            />
+                         ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.charlotteReviews}</div>
+                         )}
                          <div style={{fontSize:'0.75rem', marginBottom:'2px'}}>4.9/5 ⭐⭐⭐⭐⭐</div>
-                         <a href={metrics.reviewLinks.charlotte} style={{fontSize:'0.7rem', color:'#3b82f6', textDecoration:'underline'}} target="_blank">View</a>
+                         <a href={metrics.reviewLinks.charlotte} style={{fontSize:'0.7rem', color:'#3a8dde', textDecoration:'underline'}} target="_blank">View</a>
                     </div>
                 </div>
             </div>
@@ -200,7 +245,7 @@ We expect revenue to be at $45,000-$46,000 next month.`)}
                     </div>
                 )}
 
-                {/* 2. Chart (Move In / Move Out) - Yellow */}
+                {/* 2. Performance Chart - Brand Colors */}
                 <div className={styles.chartContainer}>
                     <div style={{fontSize:'0.7rem', color:'#64748b', marginBottom:'4px', textAlign:'center', fontWeight:600}}>MOVE IN (Bar) vs MOVE OUT (Line)</div>
                     <ResponsiveContainer width="100%" height="100%">
@@ -209,34 +254,69 @@ We expect revenue to be at $45,000-$46,000 next month.`)}
                         <XAxis dataKey="month" hide />
                         <YAxis hide />
                         <Tooltip content={<ChartTooltip />} />
-                        <Bar dataKey="houstonIn" name="Move In" fill="#eab308" barSize={20} radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="houstonIn" name="Move In" fill="#ffc557" barSize={20} radius={[4, 4, 0, 0]} />
                         <Line type="monotone" dataKey="houstonOut" name="Move Out" stroke="#ca8a04" strokeWidth={3} dot={{r:3}} />
                       </ComposedChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* 3. KPIs */}
+                {/* 3. Metrics Row */}
                 <div className={styles.kpiRow}>
                     <div className={styles.kpiBox}>
                         <div className={styles.kpiLabel}>Revenue</div>
-                        <div className={styles.kpiValue} style={{color:'#eab308'}}>{metrics.houstonRevenue}</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.houstonRevenue} 
+                                onChange={(e) => handleUpdate("houstonRevenue", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center', color: '#ffc557', fontWeight: 700 }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{color:'#ffc557'}}>{metrics.houstonRevenue}</div>
+                        )}
                     </div>
                      <div className={styles.kpiBox}>
-                        <div className={styles.kpiLabel}>Occupancy</div>
-                        <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
-                           {metrics.houstonOccupiedUnits}<span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:400}}>/{metrics.houstonTotalUnits}</span>
-                        </div>
-                        <div style={{fontSize:'0.75rem', color:'#eab308', fontWeight:600}}>{metrics.houstonOccupancyPercent}%</div>
+                        <div className={styles.kpiLabel}>Units / Total</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.houstonOccupiedUnits} 
+                                onChange={(e) => handleUpdate("houstonOccupiedUnits", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center', fontSize: '0.8rem' }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1rem'}}>
+                                {cleanUnits(metrics.houstonOccupiedUnits, metrics.houstonTotalUnits)}
+                            </div>
+                        )}
                     </div>
                     <div className={styles.kpiBox}>
                         <div className={styles.kpiLabel}>Rent / SqFt</div>
-                        <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonRentPerSqFt}</div>
+                        {isEditing ? (
+                            <input 
+                                value={metrics.houstonRentPerSqFt} 
+                                onChange={(e) => handleUpdate("houstonRentPerSqFt", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center' }}
+                            />
+                        ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonRentPerSqFt}</div>
+                        )}
                     </div>
                     <div className={styles.kpiBox}>
                          <div className={styles.kpiLabel}>Reviews</div>
-                         <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonReviews}</div>
+                         {isEditing ? (
+                            <input 
+                                value={metrics.houstonReviews} 
+                                onChange={(e) => handleUpdate("houstonReviews", e.target.value)} 
+                                className={styles.newsInput}
+                                style={{ textAlign: 'center' }}
+                            />
+                         ) : (
+                            <div className={styles.kpiValue} style={{fontSize:'1.1rem'}}>{metrics.houstonReviews}</div>
+                         )}
                          <div style={{fontSize:'0.75rem', marginBottom:'2px'}}>4.6/5 ⭐⭐⭐⭐⭐</div>
-                         <a href={metrics.reviewLinks.houston} style={{fontSize:'0.7rem', color:'#eab308', textDecoration:'underline'}} target="_blank">View</a>
+                         <a href={metrics.reviewLinks.houston} style={{fontSize:'0.7rem', color:'#ffc557', textDecoration:'underline'}} target="_blank">View</a>
                     </div>
                 </div>
             </div>

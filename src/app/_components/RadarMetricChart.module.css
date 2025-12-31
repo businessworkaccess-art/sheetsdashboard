@@ -42,14 +42,14 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #06b6d4; /* Aqua/Cyan-500 */
+  background: #2381a0; /* Turquoise */
 }
 
 .dotGray {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #94a3b8;
+  background: #5a7d88; /* Grayer Turquoise */
 }
 
 .chartWrapper {
@@ -62,13 +62,15 @@
 
 .categoryLabel {
   position: absolute;
-  font-size: 20px;
-  font-weight: 300; /* Lighter weight like the image */
-  color: #1e3a8a; /* Deep blue */
-  opacity: 1;
+  font-size: 18px;
+  font-weight: 700; 
+  color: #1e3a8a;
+  opacity: 0.9;
   pointer-events: none;
   z-index: 10;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px white, 0 0 5px white; /* Bubble effect */
 }
 
 /* Tooltip Styles */

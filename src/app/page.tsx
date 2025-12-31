@@ -109,6 +109,7 @@ export default function Home() {
         body: JSON.stringify({
           portfolio: portfolioData,
           kpiMetrics: kpiMetrics,
+          revenueTrend: revenueTrend,
         }),
       });
 
@@ -179,14 +180,29 @@ export default function Home() {
     // Wait a brief moment for any scroll effects
     await new Promise(resolve => setTimeout(resolve, 100));
 
+    // Temporary style adjustment for export clarity
+    const originalClass = dashboardRef.current.className;
+    if (styles.exportMode) {
+      dashboardRef.current.classList.add(styles.exportMode);
+    }
+    
+    // Allow a moment for styles to apply
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+
     const canvas = await html2canvas(dashboardRef.current, {
-      scale: 3, // Increased scale for clearer text/colors
+      scale: 4, // High resolution for clear text
       useCORS: true,
-      backgroundColor: null, // Transparent/Use CSS background
+      backgroundColor: "#ffffff", // Force solid white background
       logging: false,
       windowWidth: dashboardRef.current.scrollWidth,
       windowHeight: dashboardRef.current.scrollHeight
     });
+
+    // Remove export mode class
+    if (styles.exportMode) {
+      dashboardRef.current.classList.remove(styles.exportMode);
+    }
 
     const imageData =
       format === "jpeg"
@@ -405,14 +421,9 @@ export default function Home() {
                     Seller financing: 5 years @ 6% interest only
                   </div>
                   <div className={styles.propertyPhases}>
-                    <div>
-                      <strong>Phase 1:</strong> 120 relocatable + 220 first
-                      floor units ($750K) → 90% in 1.5 yrs
-                    </div>
-                    <div>
-                      <strong>Phase 2:</strong> 220 second floor units ($400K) →
-                      90% by year 4 | ~524 units
-                    </div>
+                    <p>
+                      Our business plan for Charlotte is structured in two key phases, beginning with the rapid installation of 120 relocatable and 220 first-floor units ($750K) to reach 90% occupancy within 1.5 years, followed by the addition of 220 second-floor units ($400K) to hit the same occupancy target by Year 4, totaling ~524 units property-wide.
+                    </p>
                   </div>
                 </div>
                 <div className={styles.businessPlanProperty}>
@@ -426,14 +437,9 @@ export default function Home() {
                     acquisition
                   </div>
                   <div className={styles.propertyPhases}>
-                    <div>
-                      <strong>Phase 1:</strong> Lease up climate controlled
-                      units to 90% occupancy
-                    </div>
-                    <div>
-                      <strong>Phase 2:</strong> Build non-climate controlled +
-                      RV/boat parking | ~345 units
-                    </div>
+                    <p>
+                      The strategic plan for Houston starts with a focused lease-up of all existing climate-controlled units to reach a 90% occupancy stabilization target, followed by a strategic expansion with non-climate controlled storage and dedicated RV/boat parking, scaling the facility to approximately 345 total units.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -487,8 +493,8 @@ export default function Home() {
         {/* Bottom band – CHARTS GRID */}
         {!loading && !error && hasMounted && (
           <section className={chartStyles.chartsGrid}>
-            {/* Chart 1: Rethink Monthly Sales vs Forecast */}
-            <div className={chartStyles.chartCard}>
+            {/* 1. FUND TOTALS SECTION */}
+            <div className={chartStyles.chartCard} style={{ gridColumn: '1 / -1' }}>
               <div className={chartStyles.chartHeader}>
                 <h3 className={chartStyles.chartTitle}>
                   Rethink - Monthly Sales vs Forecast
@@ -500,57 +506,25 @@ export default function Home() {
                     data={chartData}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid
-                      stroke="#334155"
-                      strokeDasharray="3 3"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="month"
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={50}
-                      interval={0}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 11 }}
-                      tickFormatter={formatCurrencyAxis}
-                      axisLine={false}
-                      tickLine={false}
-                    />
+                    <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} angle={-45} textAnchor="end" height={50} interval={0} />
+                    <YAxis stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} tickFormatter={formatCurrencyAxis} axisLine={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ color: "#fff" }} />
-                    <Area
-                      type="step"
-                      dataKey="totalForecast"
-                      name="Forecast"
-                      fill="#64748b"
-                      stroke="#94a3b8"
-                      fillOpacity={0.3}
-                    />
-                    <Bar
-                      dataKey="houstonRev"
-                      name="Houston"
-                      stackId="a"
-                      fill="#eab308"
-                      radius={[0, 0, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="charlotteRev"
-                      name="Charlotte"
-                      stackId="a"
-                      fill="#3b82f6"
-                      radius={[4, 4, 0, 0]}
-                    />
+                    <Legend wrapperStyle={{ color: "#fff", fontSize: "10px" }} />
+                    <Area type="step" dataKey="totalForecast" name="Forecast" fill="#64748b" stroke="#94a3b8" fillOpacity={0.3} />
+                    <Bar dataKey="houstonRev" name="Houston" stackId="a" fill="#ffc557" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="charlotteRev" name="Charlotte" stackId="a" fill="#3a8dde" radius={[4, 4, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Chart 2: Charlotte Monthly Sales vs Forecast */}
+            <div style={{ gridColumn: '1 / -1' }}>
+               <TrendTables data={revenueTrend} type="fund" isEditing={isEditing} onUpdate={setRevenueTrend} />
+            </div>
+
+            {/* 2. PROPERTY SPECIFIC SECTION */}
+            {/* Charlotte Chart */}
             <div className={chartStyles.chartCard}>
               <div className={chartStyles.chartHeader}>
                 <h3 className={chartStyles.chartTitle}>
@@ -563,49 +537,19 @@ export default function Home() {
                     data={chartData}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid
-                      stroke="#334155"
-                      strokeDasharray="3 3"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="month"
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={50}
-                      interval={0}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 11 }}
-                      tickFormatter={formatCurrencyAxis}
-                      axisLine={false}
-                      tickLine={false}
-                    />
+                    <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} angle={-45} textAnchor="end" height={50} interval={0} />
+                    <YAxis stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} tickFormatter={formatCurrencyAxis} axisLine={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ color: "#fff" }} />
-                    <Area
-                      type="step"
-                      dataKey="charlotteForecast"
-                      name="Forecast"
-                      fill="#64748b"
-                      stroke="#94a3b8"
-                      fillOpacity={0.3}
-                    />
-                    <Bar
-                      dataKey="charlotteRev"
-                      name="Actuals"
-                      fill="#4169E1"
-                      radius={[4, 4, 0, 0]}
-                    />
+                    <Legend wrapperStyle={{ color: "#fff", fontSize: "10px" }} />
+                    <Area type="step" dataKey="charlotteForecast" name="Forecast" fill="#64748b" stroke="#94a3b8" fillOpacity={0.3} />
+                    <Bar dataKey="charlotteRev" name="Actuals" fill="#3a8dde" radius={[4, 4, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Chart 3: Houston Monthly Sales vs Forecast */}
+            {/* Houston Chart */}
             <div className={chartStyles.chartCard}>
               <div className={chartStyles.chartHeader}>
                 <h3 className={chartStyles.chartTitle}>
@@ -618,59 +562,38 @@ export default function Home() {
                     data={chartData}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid
-                      stroke="#334155"
-                      strokeDasharray="3 3"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="month"
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={50}
-                      interval={0}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      tick={{ fill: "#cbd5e1", fontSize: 11 }}
-                      tickFormatter={formatCurrencyAxis}
-                      axisLine={false}
-                      tickLine={false}
-                    />
+                    <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} angle={-45} textAnchor="end" height={50} interval={0} />
+                    <YAxis stroke="#94a3b8" tick={{ fill: "#cbd5e1", fontSize: 9 }} tickFormatter={formatCurrencyAxis} axisLine={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ color: "#fff" }} />
-                    <Area
-                      type="step"
-                      dataKey="houstonForecast"
-                      name="Forecast"
-                      fill="#64748b"
-                      stroke="#94a3b8"
-                      fillOpacity={0.3}
-                    />
-                    <Bar
-                      dataKey="houstonRev"
-                      name="Actuals"
-                      fill="#eab308"
-                      radius={[4, 4, 0, 0]}
-                    />
+                    <Legend wrapperStyle={{ color: "#fff", fontSize: "10px" }} />
+                    <Area type="step" dataKey="houstonForecast" name="Forecast" fill="#64748b" stroke="#94a3b8" fillOpacity={0.3} />
+                    <Bar dataKey="houstonRev" name="Actuals" fill="#ffc557" radius={[4, 4, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
+
+            {/* Charlotte Table */}
+            <div>
+               <TrendTables data={revenueTrend} type="charlotte" isEditing={isEditing} onUpdate={setRevenueTrend} />
+            </div>
+
+            {/* Houston Table */}
+            <div>
+               <TrendTables data={revenueTrend} type="houston" isEditing={isEditing} onUpdate={setRevenueTrend} />
+            </div>
           </section>
         )}
 
+
+
         {/* Growth Radar Chart */}
         {!loading && !error && kpiMetrics && (
-           <section className={styles.card} style={{ minHeight: '520px', marginBottom: '20px' }}>
+           <section className={styles.card} style={{ minHeight: '520px', marginTop: '20px' }}>
               <RadarMetricChart metrics={kpiMetrics} />
            </section>
         )}
-
-        {/* Bottom band – TREND TABLES */}
-        {!loading && !error && <TrendTables data={revenueTrend} />}
       </div>
     </main>
   );
